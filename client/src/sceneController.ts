@@ -21,8 +21,6 @@ import { debugPrint, raiseCriticalError } from "./runtime.js"
 import { float } from "./types.js"
 import { Controls } from "./controls.js"
 import { Paths } from "./paths.js"
-import { WeatherControllerDelegate } from "./weatherControllerDelegate.js"
-import { WeatherController } from "./weatherController.js"
 import { int } from "./types.js"
 import { SceneObjectCommandTeleport } from "./sceneObjectCommandTeleport.js"
 import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
@@ -50,7 +48,6 @@ export class SceneController implements
                                         ControlsDelegate,
                                         PhysicsControllerDelegate,
                                         SimplePhysicsControllerDelegate,
-                                        WeatherControllerDelegate,
                                         DecorControlsDataSource,
                                         ObjectsPickerControllerDelegate {
 
@@ -96,8 +93,6 @@ export class SceneController implements
     public gameSettings: GameSettings;
 
     private flyMode: boolean = false;
-
-    private weatherController?: WeatherController;
 
     public physicsEnabled: boolean;
     public delegate: SceneControllerDelegate | null = null
@@ -462,13 +457,6 @@ export class SceneController implements
         return this.canMoveBackward;
     }
 
-    weatherControllerDidRequireToAddInstancedMeshToScene(
-        _: WeatherController,
-        instancedMesh: any
-    ): void {
-        this.scene.add(instancedMesh);
-    }
-
     public addCommand(
         name: string,
         type: string,
@@ -596,7 +584,6 @@ export class SceneController implements
             }
             this.physicsController.step(delta)
         }
-        this.weatherController?.step(delta)
         this.animationsStep(delta)
         this.render()
         this.updateUI()

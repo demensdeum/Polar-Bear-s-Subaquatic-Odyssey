@@ -1,6 +1,6 @@
 import { State } from "./state.js"
 import { Context } from "./context.js"
-import { InitializationScreenState } from "./initializationScreenState.js"
+import { InGameState } from "./inGameState.js"
 import { GameVector3 } from "./gameVector3.js"
 declare function _t(key: string): string;
 
@@ -134,12 +134,12 @@ export class MainMenuState implements State {
     public playButtonDidPress() {
         this.context.sceneController.removeAllSceneObjectsExceptCamera();
         
-        const initializationScreenState = new InitializationScreenState(
+        const ingameState = new InGameState(
             "initializationScreenState",
             this.context
         )
 
-        this.context.transitionTo(initializationScreenState)
+        this.context.transitionTo(ingameState)
     }
 
 }

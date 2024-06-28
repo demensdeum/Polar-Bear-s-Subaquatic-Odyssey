@@ -1,5 +1,5 @@
-import { GameGeolocationPosition } from "./gameGeolocationPosition.js"
 import { float } from "./types.js"
+import { GameGeolocationPosition } from "./gameGeolocationPosition.js"
 
 export class Utils {
     public static showHtmlElement(
