@@ -9,6 +9,8 @@ export class InGameState implements State {
     public name: string
     context: Context
 
+    private cubeX = 0;
+
     constructor(
         name: string,
         context: Context
@@ -43,9 +45,37 @@ export class InGameState implements State {
             )            
         )
 
+        this.context.sceneController.addModelAt(
+            "cube",
+            "com.demensdeum.arctica.cube",
+            0,
+            0,
+            -2,
+            0,
+            0,
+            0,
+            true,
+            new DecorControls(
+                "hero",
+                new SceneObjectCommandIdle(
+                    "idle",
+                    0
+                ),
+                this.context.sceneController,
+                this.context.sceneController,
+                this.context.sceneController
+            )            
+        )
     }
 
     step(): void {
+        this.context.sceneController.rotateObjectTo(
+            "cube",
+            0,
+            this.cubeX,
+            0
+        )
+        this.cubeX += 0.04
     }
 
 }
