@@ -99,14 +99,34 @@ export class InGameState implements State,
                 overwrite: false
             }
         )
+
+        this.context.sceneController.addModelAt(
+            {
+                name: Names.Bottom,
+                modelName: "com.demensdeum.arctica.bottom",
+                position: new GameVector3(startHeroPosition.x, startHeroPosition.y - 2, startHeroPosition.z),
+                rotation: new GameVector3(0, 0, 0),
+                isMovable: true,
+                controls: new DecorControls(
+                    Names.Hero,
+                    new SceneObjectCommandIdle(
+                        "idle",
+                        0
+                    ),
+                    this.context.sceneController,
+                    this.context.sceneController,
+                    this.context.sceneController
+                )
+            }
+        )
+
         this.adaptMap()        
     }
 
     private moveCamera() {
-
         const debugCamera = false
         const cameraY = debugCamera ? 8 : 2
-        const cameraZ = debugCamera ? 8 : 1.4
+        const cameraZ = debugCamera ? 8 : 1
 
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         const cameraPosition = new GameVector3(
@@ -118,7 +138,7 @@ export class InGameState implements State,
             {
                 name: Names.Camera,
                 position: cameraPosition,
-                rotation: new GameVector3(Utils.degreesToRadians(-55), 0, 0)
+                rotation: new GameVector3(Utils.degreesToRadians(-65), 0, 0)
             }
         )
     }
@@ -132,6 +152,11 @@ export class InGameState implements State,
         const heroPositionY = Math.floor(heroPosition.z)
 
         debugPrint(`${heroPosition.x}-${heroPosition.y}`)
+
+        this.context.sceneController.moveObject({
+            name: Names.Bottom,
+            position: new GameVector3(heroPosition.x, heroPosition.y - 1.5, heroPosition.z)
+        })
 
         const previousHeroX = Math.floor(this.previousHeroPosition.x)
         const previousHeroY = Math.floor(this.previousHeroPosition.y)
@@ -158,7 +183,7 @@ export class InGameState implements State,
                 cursor: centerCursor,
                 onlyFloor: false,
                 overwrite: false,
-                roomFrequency: 10000
+                roomFrequency: 400
             }
         )        
     }
@@ -204,6 +229,18 @@ export class InGameState implements State,
                         position: position
                     }
                 )
+
+                const rotationY = Math.atan2(
+                    diffX,
+                    diffY,
+                )
+    
+                this.context.sceneController.rotateObject(
+                    {
+                        name: Names.Hero,
+                        rotation: new GameVector3(0, Utils.degreesToRadians(180) + rotationY, 0)
+                    }
+                )                
             }
             else if (inputEvent.name == GameInputMouseEventNames.MouseUp) {
                 this.isMoveAnimationPlaying = false

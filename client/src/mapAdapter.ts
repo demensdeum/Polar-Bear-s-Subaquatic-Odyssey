@@ -1,6 +1,7 @@
 import { Context } from "./context.js"
 import { DecorControls } from "./decorControls.js"
 import { GameMap } from "./gameMap.js"
+import { GameMapTile } from "./gameMapTile.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { GameVector3 } from "./gameVector3.js"
 import { Options } from "./options.js"
@@ -10,7 +11,8 @@ import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
 export class MapAdapter {
 
     private context: Context
-    private addedCubes = new Set<string>()
+    private addedTilesNames = new Set<string>()
+    private addedTiles: { [key: string]: GameMapTile } = {};
 
     constructor(
         context: Context
@@ -24,8 +26,8 @@ export class MapAdapter {
         centerCursor: GameVector2D
         map: GameMap
     }) {
-        let newCubes = new Set<string>()
-        const oldCubes = new Set<string>(this.addedCubes)
+        let newTiles = new Set<string>()
+        const oldTiles = new Set<string>(this.addedTilesNames)
         const map = args.map
         const centerCursor = args.centerCursor
         const region = Options.visibleMapRegion
@@ -38,16 +40,17 @@ export class MapAdapter {
                 })
                 if (tile) {
                     const cubeName = `cube-${cursorX}-${cursorY}`
-                    newCubes.add(cubeName)
-                    if (this.addedCubes.has(cubeName)) {
+                    newTiles.add(cubeName)
+                    if (this.addedTilesNames.has(cubeName)) {
                         continue
                     }
-                    this.addedCubes.add(cubeName)
+                    this.addedTilesNames.add(cubeName)
+                    this.addedTiles[cubeName] = tile
                     const cubeY = tile.isSolid ? 0 : -1
                     this.context.sceneController.addModelAt(
                         {
                             name: cubeName,
-                            modelName: "com.demensdeum.arctica.cube",
+                            modelName: tile.isSolid ? "com.demensdeum.arctica.wall" : "com.demensdeum.arctica.floor",
                             position: new GameVector3(cursorX, cubeY, cursorY),
                             rotation: new GameVector3(0, 0, 0),
                             isMovable: true,
@@ -60,20 +63,29 @@ export class MapAdapter {
                                 this.context.sceneController,
                                 this.context.sceneController,
                                 this.context.sceneController
-                            )
+                            ),
+                            transparent: tile.isSolid,
+                            opacity: tile.isSolid ? 0.8 : 1.0
                         }
                     )
                 }
             }
         }
 
-        const unusedCubes = new Set([...oldCubes].filter(x => !newCubes.has(x)))
-        unusedCubes.forEach(x => this.deleteCube(x))
+        const unusedTiles = new Set([...oldTiles].filter(x => !newTiles.has(x)))
+        unusedTiles.forEach(x => this.deleteTile({
+            name: x,
+            tile: this.addedTiles[x]
+        }))
     }
 
-    private deleteCube(name: string) {
-        this.context.sceneController.removeSceneObjectWithName(name)
-        this.addedCubes.delete(name)
+    private deleteTile(args: {
+        name: string,
+        tile: GameMapTile
+    }) {
+        args.tile.forEachItem(x => this.context.sceneController.removeSceneObjectWithName(x))
+        this.context.sceneController.removeSceneObjectWithName(args.name)
+        this.addedTilesNames.delete(args.name)
     }
 
 }

@@ -43,7 +43,6 @@ export class MapController {
                         })
                     }
                     else {
-                        debugger
                         const isRoom = Utils.randomInt(roomFrequency) == 0
                         if (isRoom) {
                             this.putRoomAt(

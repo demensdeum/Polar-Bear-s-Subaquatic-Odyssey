@@ -1,5 +1,6 @@
 export enum Names {
     Hero = "Hero",
     Camera = "Camera",
-    Skybox = "Skybox"
+    Skybox = "Skybox",
+    Bottom = "Bottom"
 };
