@@ -13,6 +13,7 @@ import { GameInputMouseEvent } from "./gameInputMouseEvent.js"
 import { GameInputMouseEventNames } from "./gameInputMouseEventNames.js"
 import { MapController } from "./mapController.js"
 import { MapAdapter } from "./mapAdapter.js"
+import { GameVector2D } from "./gameVector2D.js"
 
 export class InGameState implements State,
     InputControllerDelegate {
@@ -27,6 +28,8 @@ export class InGameState implements State,
 
     private mapController: MapController
     private mapAdapter: MapAdapter
+
+    private previousHeroPosition = new GameVector2D(0,0)
 
     constructor(
         name: string,
@@ -79,11 +82,9 @@ export class InGameState implements State,
             }
         )
 
-        this.mapController.initializeMap()
+        debugPrint(this.previousHeroPosition)
 
-        this.mapAdapter.adapt({
-            map: this.mapController.map
-        })
+        this.mapController.initializeMap()
     }
 
     private topdownCameraIfNeeded() {
@@ -104,6 +105,18 @@ export class InGameState implements State,
     step(): void {
         this.topdownCameraIfNeeded()
         this.inputController.step()
+        this.adaptMap()
+    }
+
+    private adaptMap() {
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        const heroPositionX = Math.floor(heroPosition.x)
+        const heroPositionY = Math.floor(heroPosition.y)
+        const centerCursor = new GameVector2D(heroPositionX, heroPositionY)
+        this.mapAdapter.adapt({
+            centerCursor: centerCursor,
+            map: this.mapController.map
+        })        
     }
 
     inputControllerDidReceive<T>(_: InputController, inputEvent: GameInputEvent<T>): void {

@@ -9,6 +9,7 @@ import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
 export class MapAdapter {
 
     private context: Context
+    private addedCubes = new Set<string>()
 
     constructor(
         context: Context
@@ -19,21 +20,28 @@ export class MapAdapter {
     }
 
     public adapt(args: {
+        centerCursor: GameVector2D
         map: GameMap
     }) {
         const map = args.map
-        for (var y = -100; y < 100; y++) {
-            for (var x = -100; x < 100; x++) {
+        const centerCursor = args.centerCursor;
+        const range = 6
+        for (var cursorY = centerCursor.y - range * 0.5; cursorY < centerCursor.y + range; cursorY++) {
+            for (var cursorX = centerCursor.x - range * 0.5; cursorX < centerCursor.x + range; cursorX++) {
                 const tile = map.tileAt({
-                    position: new GameVector2D(x, y)
+                    position: new GameVector2D(cursorX, cursorY)
                 })
                 if (tile && tile.isSolid == false) {
-                    debugger
+                    const cubeName = `cube-${cursorX}-${cursorY}`
+                    if (this.addedCubes.has(cubeName)) {
+                        continue
+                    }
+                    this.addedCubes.add(cubeName)
                     this.context.sceneController.addModelAt(
                         {
-                            name: `cube-${x}-${y}`,
+                            name: cubeName,
                             modelName: "com.demensdeum.arctica.cube",
-                            position: new GameVector3(x, -1, y),
+                            position: new GameVector3(cursorX, -1, cursorY),
                             rotation: new GameVector3(0, 0, 0),
                             isMovable: true,
                             controls: new DecorControls(
