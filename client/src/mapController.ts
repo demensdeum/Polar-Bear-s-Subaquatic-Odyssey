@@ -1,6 +1,7 @@
 import { GameMap } from "./gameMap.js";
 import { GameVector2D } from "./gameVector2D.js";
 import { Utils } from "./utils.js";
+import { Options } from "./options.js";
 
 export class MapController {
 
@@ -18,11 +19,11 @@ export class MapController {
         } = args;
 
         const cursor = args.cursor
-        const region = 6
+        const region = Options.visibleMapRegion
         for (var y = 0; y < region; y++) {
             for (var x = 0; x < region; x++) {
-                const cursorX = cursor.x - region * 0.5 + x
-                const cursorY = cursor.y - region * 0.5 + y
+                const cursorX = cursor.x - Math.floor(region * 0.5) + x
+                const cursorY = cursor.y - Math.floor(region * 0.5) + y
                 if (!overwrite && this.map.tileAt({position: new GameVector2D(cursorX, cursorY)})) {
                     continue
                 }

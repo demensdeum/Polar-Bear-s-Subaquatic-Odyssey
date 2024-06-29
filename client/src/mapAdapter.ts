@@ -3,6 +3,7 @@ import { DecorControls } from "./decorControls.js"
 import { GameMap } from "./gameMap.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { GameVector3 } from "./gameVector3.js"
+import { Options } from "./options.js"
 import { debugPrint } from "./runtime.js"
 import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
 
@@ -19,15 +20,15 @@ export class MapAdapter {
         debugPrint(this.context)
     }
 
-    public adapt(args: {
+    public adaptRegion(args: {
         centerCursor: GameVector2D
         map: GameMap
     }) {
         const map = args.map
         const centerCursor = args.centerCursor;
-        const region = 6
-        for (var cursorY = centerCursor.y - region * 0.5; cursorY < centerCursor.y + region; cursorY++) {
-            for (var cursorX = centerCursor.x - region * 0.5; cursorX < centerCursor.x + region; cursorX++) {
+        const region = Options.visibleMapRegion
+        for (var cursorY = centerCursor.y - Math.floor(region * 0.5); cursorY < centerCursor.y + region; cursorY++) {
+            for (var cursorX = centerCursor.x - Math.floor(region * 0.5); cursorX < centerCursor.x + region; cursorX++) {
                 const tile = map.tileAt({
                     position: new GameVector2D(cursorX, cursorY)
                 })

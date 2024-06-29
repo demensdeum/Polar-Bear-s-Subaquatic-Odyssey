@@ -3,7 +3,6 @@ import { GameVector2D } from "./gameVector2D.js";
 
 export class GameMap {
     
-    public startPoint: GameVector2D = new GameVector2D(0,0)
     public tiles: { [key: string]: GameMapTile } = {};
 
     public tileAt(args :{

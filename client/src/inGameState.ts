@@ -22,7 +22,6 @@ export class InGameState implements State,
     context: Context
 
     private isMoveAnimationPlaying = false
-    private topCamera = true
     private inputController: InputController
     private canvas: HTMLCanvasElement
 
@@ -62,11 +61,14 @@ export class InGameState implements State,
             }
         )
 
+
+        const startHeroPosition = new GameVector3(0, 0, 0)
+
         this.context.sceneController.addModelAt(
             {
                 name: Names.Hero,
                 modelName: "com.demensdeum.hero",
-                position: new GameVector3(0, 0, 0),
+                position: startHeroPosition,
                 rotation: new GameVector3(0, 0, 0),
                 isMovable: true,
                 controls: new DecorControls(
@@ -84,7 +86,7 @@ export class InGameState implements State,
 
         debugPrint(this.previousHeroPosition)
 
-        this.previousHeroPosition = this.mapController.map.startPoint
+        this.previousHeroPosition = startHeroPosition
 
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         const heroPositionX = Math.floor(heroPosition.x)
@@ -100,28 +102,27 @@ export class InGameState implements State,
         this.adaptMap()        
     }
 
-    private topdownCameraIfNeeded() {
-        if (!this.topCamera) {
-            return
-        }
+    private moveCamera() {
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
-        const cameraPosition = new GameVector3(heroPosition.x, heroPosition.y + 2, heroPosition.z + 2.4)
+        const cameraPosition = new GameVector3(heroPosition.x, heroPosition.y + 2, heroPosition.z + 1.4)
         this.context.sceneController.moveAndRotateObject(
             {
                 name: Names.Camera,
                 position: cameraPosition,
-                rotation: new GameVector3(Utils.degreesToRadians(-45), 0, 0)
+                rotation: new GameVector3(Utils.degreesToRadians(-55), 0, 0)
             }
         )
     }
 
     step(): void {
-        this.topdownCameraIfNeeded()
+        this.moveCamera()
         this.inputController.step()
 
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         const heroPositionX = Math.floor(heroPosition.x)
         const heroPositionY = Math.floor(heroPosition.z)
+
+        debugPrint(`${heroPosition.x}-${heroPosition.y}`)
 
         const previousHeroX = Math.floor(this.previousHeroPosition.x)
         const previousHeroY = Math.floor(this.previousHeroPosition.y)
@@ -157,7 +158,7 @@ export class InGameState implements State,
         const heroPositionX = Math.floor(heroPosition.x)
         const heroPositionY = Math.floor(heroPosition.z)
         const centerCursor = new GameVector2D(heroPositionX, heroPositionY)
-        this.mapAdapter.adapt({
+        this.mapAdapter.adaptRegion({
             centerCursor: centerCursor,
             map: this.mapController.map
         })        
