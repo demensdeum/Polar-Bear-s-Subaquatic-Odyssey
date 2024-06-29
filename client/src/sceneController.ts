@@ -1165,23 +1165,29 @@ export class SceneController implements
     }
 
     public addModelAt(
-        name: string,
-        modelName: string,
-        x: number,
-        y: number,
-        z: number,
-        rX: number,
-        rY: number,
-        rZ: number,
-        isMovable: boolean,        
-        controls: Controls,
-        boxSize: number = 1.0,
-        successCallback: (()=>void) = ()=>{},     
-        color: number = 0xFFFFFF,
-        transparent: boolean = false,
-        opacity: float = 1.0
+        args: {
+            name: string,
+            modelName: string,
+            position: GameVector3,
+            rotation: GameVector3,
+            isMovable: boolean,        
+            controls: Controls,
+            boxSize?: number,
+            successCallback?: () => void,     
+            color?: number,
+            transparent?: boolean,
+            opacity?: float
+        }
     ): void {
         debugPrint("addModelAt");
+
+        const {
+            boxSize = 1.0,
+            successCallback = () => {},
+            color = 0xFFFFFF,
+            transparent = false,
+            opacity = 1.0
+        } = args;
 
         const boxGeometry = new THREE.BoxGeometry(
             boxSize, 
@@ -1201,24 +1207,24 @@ export class SceneController implements
             boxMaterial
         )
 
-        box.position.x = x
-        box.position.y = y
-        box.position.z = z
+        box.position.x = args.position.x
+        box.position.y = args.position.y
+        box.position.z = args.position.z
 
-        box.rotation.x = rX
-        box.rotation.y = rY
-        box.rotation.z = rZ
+        box.rotation.x = args.rotation.x
+        box.rotation.y = args.rotation.y
+        box.rotation.z = args.rotation.z
 
         const sceneController = this
 
         const sceneObject = new SceneObject(
-            name,
+            args.name,
             "Model",
             "NONE",
-            modelName,
+            args.modelName,
             box,
-            isMovable,
-            controls,
+            args.isMovable,
+            args.controls,
             new Date().getTime()
         )
         sceneController.addSceneObject(sceneObject)
@@ -1227,7 +1233,7 @@ export class SceneController implements
         const dracoLoader = new DRACOLoader()
         dracoLoader.setDecoderPath('build/three/examples/jsm/libs/draco/')
         modelLoader.setDRACOLoader(dracoLoader)
-        const modelPath = Paths.modelPath(modelName)
+        const modelPath = Paths.modelPath(args.modelName)
 
         const self = this
 
@@ -1571,20 +1577,20 @@ export class SceneController implements
     }
 
     public moveObjectTo(
-        name: string,
-        x: number,
-        y: number,
-        z: number
+        args: {
+            name: string,
+            position: GameVector3
+        }
     ): void {
         const sceneObject = this.sceneObject(
-            name,
-            x,
-            y,
-            z
+            args.name,
+            args.position.x,
+            args.position.y,
+            args.position.z
         );
-        sceneObject.threeObject.position.x = x;
-        sceneObject.threeObject.position.y = y;
-        sceneObject.threeObject.position.z = z;
+        sceneObject.threeObject.position.x = args.position.x;
+        sceneObject.threeObject.position.y = args.position.y;
+        sceneObject.threeObject.position.z = args.position.z;
         sceneObject.changeDate = Utils.timestamp()
     }
 

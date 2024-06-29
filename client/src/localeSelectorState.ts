@@ -11,7 +11,7 @@ declare function _t(key: string): string;
 
 export class LocaleSelectorState extends State implements SceneControllerDelegate {
     private readonly switchMillisecondsTimeout = 30000
-    private startDate = new Date()    
+    private startDate = new Date()
 
     initialize(): void {
         const savedLocalization = window.localStorage.getItem("savedLocalization")
@@ -28,55 +28,51 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
             }
         )
         this.context.sceneController.addModelAt(
-            "englishman",
-            "com.demensdeum.hero",
-            0.32,
-            -0.35,
-            -1.23,
-            0,
-            Utils.degreesToRadians(120),
-            0,
-            true,
-            new DecorControls(
-                "hero",
-                new SceneObjectCommandIdle(
-                    "idle",
-                    0
-                ),
-                this.context.sceneController,
-                this.context.sceneController,
-                this.context.sceneController
-            )
+            {
+                name: "englishman",
+                modelName: "com.demensdeum.hero",
+                position: new GameVector3(0.32, -0.35, -1.23),
+                rotation: new GameVector3(0, Utils.degreesToRadians(120), 0),
+                isMovable: true,
+                controls: new DecorControls(
+                    "englishman",
+                    new SceneObjectCommandIdle(
+                        "idle",
+                        0
+                    ),
+                    this.context.sceneController,
+                    this.context.sceneController,
+                    this.context.sceneController
+                )
+            }
         )
 
         this.context.sceneController.addModelAt(
-            "russian",
-            "com.demensdeum.cat.gray",
-            -0.22,
-            -0.35,
-            -1.23,
-            0,
-            Utils.degreesToRadians(200),
-            0,
-            true,
-            new DecorControls(
-                "hero",
-                new SceneObjectCommandIdle(
-                    "idle",
-                    0
-                ),
-                this.context.sceneController,
-                this.context.sceneController,
-                this.context.sceneController
-            )
+            {
+                name: "russian",
+                modelName: "com.demensdeum.cat.gray",
+                position: new GameVector3(-0.22, -0.35, -1.23),
+                rotation: new GameVector3(0, Utils.degreesToRadians(200), 0),
+                isMovable: true,
+                controls: new DecorControls(
+                    "russian",
+                    new SceneObjectCommandIdle(
+                        "idle",
+                        0
+                    ),
+                    this.context.sceneController,
+                    this.context.sceneController,
+                    this.context.sceneController
+                )
+            }
         )
 
         const russianButtonDiv = document.createElement('div')
         russianButtonDiv.textContent = "Русский"
         russianButtonDiv.style.color = "white"
-        russianButtonDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
+        russianButtonDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'
         russianButtonDiv.style.fontSize = "30px"
-        russianButtonDiv.style.padding = "22px"    
+        russianButtonDiv.style.padding = "22px"
         russianButtonDiv.onclick = () => { this.didSelectRussian() }
 
         this.context.sceneController.addCssPlaneObject(
@@ -88,9 +84,9 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
                     height: 2
                 },
                 position: new GameVector3(
-                        -0.8,
-                        -2.35,
-                        -5
+                    -0.8,
+                    -2.35,
+                    -5
                 ),
                 rotation: GameVector3.zero(),
                 scale: new GameVector3(
@@ -107,14 +103,14 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
                     stickToCamera: true
                 }
             }
-        )  
-        
+        )
+
         const englishButtonDiv = document.createElement('div')
         englishButtonDiv.textContent = "English"
         englishButtonDiv.style.color = "white"
-        englishButtonDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
+        englishButtonDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'
         englishButtonDiv.style.fontSize = "30px"
-        englishButtonDiv.style.padding = "22px"    
+        englishButtonDiv.style.padding = "22px"
         englishButtonDiv.onclick = () => { this.didSelectEnglish() }
 
         this.context.sceneController.addCssPlaneObject(
@@ -126,9 +122,9 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
                     height: 2
                 },
                 position: new GameVector3(
-                        1.2,
-                        -2.35,
-                        -5
+                    1.2,
+                    -2.35,
+                    -5
                 ),
                 rotation: GameVector3.zero(),
                 scale: new GameVector3(
@@ -160,16 +156,16 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
 
     step(): void {
         const diffMilliseconds = Math.abs((new Date().getTime() - this.startDate.getTime()))
-        
+
         if (diffMilliseconds > this.switchMillisecondsTimeout) {
             this.context.translator.locale = "ru"
             this.saveLocaleAndGoToInGameState()
-        }       
+        }
     }
 
     private saveLocaleAndGoToInGameState() {
         window.localStorage.setItem(
-            "savedLocalization", 
+            "savedLocalization",
             this.context.translator.locale
         )
 
@@ -198,5 +194,5 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
         else {
             debugPrint(`Unknown object picked: ${name}`)
         }
-    }    
+    }
 }

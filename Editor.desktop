@@ -1,14 +1,14 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=code /home/demensdeum_stream/Sources/Masonry-AR/
+Exec=code /home/demensdeum_stream/Sources/Polar-Bear-s-Subaquatic-Odyssey/
 GenericName[en_US]=
 GenericName=
 Icon=system-run
 MimeType=
 Name[en_US]=Editor
 Name=Editor
-Path=.
+Path=/home/demensdeum_stream/Sources/Polar-Bear-s-Subaquatic-Odyssey/
 StartupNotify=true
 Terminal=false
 TerminalOptions=
