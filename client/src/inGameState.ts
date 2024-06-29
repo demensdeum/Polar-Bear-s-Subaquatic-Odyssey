@@ -104,9 +104,9 @@ export class InGameState implements State,
 
     private moveCamera() {
 
-        const debugCamera = true
-        const cameraY = debugCamera ? 4 : 2
-        const cameraZ = debugCamera ? 4 : 1.4
+        const debugCamera = false
+        const cameraY = debugCamera ? 8 : 2
+        const cameraZ = debugCamera ? 8 : 1.4
 
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         const cameraPosition = new GameVector3(
@@ -157,7 +157,8 @@ export class InGameState implements State,
             {
                 cursor: centerCursor,
                 onlyFloor: false,
-                overwrite: false
+                overwrite: false,
+                roomFrequency: 10000
             }
         )        
     }

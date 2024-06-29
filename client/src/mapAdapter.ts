@@ -24,16 +24,21 @@ export class MapAdapter {
         centerCursor: GameVector2D
         map: GameMap
     }) {
+        let newCubes = new Set<string>()
+        const oldCubes = new Set<string>(this.addedCubes)
         const map = args.map
-        const centerCursor = args.centerCursor;
+        const centerCursor = args.centerCursor
         const region = Options.visibleMapRegion
-        for (var cursorY = centerCursor.y - Math.floor(region * 0.5); cursorY < centerCursor.y + region; cursorY++) {
-            for (var cursorX = centerCursor.x - Math.floor(region * 0.5); cursorX < centerCursor.x + region; cursorX++) {
+        const startCursorX = centerCursor.x - Math.floor(region * 0.5)
+        const startCursorY = centerCursor.y - Math.floor(region * 0.5)
+        for (var cursorY = startCursorY; cursorY < centerCursor.y + region; cursorY++) {
+            for (var cursorX = startCursorX; cursorX < centerCursor.x + region; cursorX++) {
                 const tile = map.tileAt({
                     position: new GameVector2D(cursorX, cursorY)
                 })
                 if (tile) {
                     const cubeName = `cube-${cursorX}-${cursorY}`
+                    newCubes.add(cubeName)
                     if (this.addedCubes.has(cubeName)) {
                         continue
                     }
@@ -62,64 +67,13 @@ export class MapAdapter {
             }
         }
 
-        // top clear
-        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
-            const x = centerCursor.x - Math.floor(region * 0.5) + i
-            const y = centerCursor.y - Math.floor(region * 0.5) - 1
-            const cubeName = `cube-${x}-${y}`
-            if (this.addedCubes.has(cubeName)) {
-                this.addedCubes.delete(cubeName)
-                this.context.sceneController.removeSceneObjectWithName(cubeName)
-            }
-        }
+        const unusedCubes = new Set([...oldCubes].filter(x => !newCubes.has(x)))
+        unusedCubes.forEach(x => this.deleteCube(x))
+    }
 
-        // bottom clear
-
-        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
-            const x = centerCursor.x - Math.floor(region * 0.5) + i
-            const y = centerCursor.y - Math.floor(region * 0.5) + Options.visibleMapRegion + 1
-            const cubeName = `cube-${x}-${y}`
-            if (this.addedCubes.has(cubeName)) {
-                this.addedCubes.delete(cubeName)
-                this.context.sceneController.removeSceneObjectWithName(cubeName)
-            }
-        }
-
-        // left clear
-
-        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
-            const x = centerCursor.x - Math.floor(region * 0.5) - 1
-            const y = centerCursor.y - Math.floor(region * 0.5) + i
-            const cubeName = `cube-${x}-${y}`
-            if (this.addedCubes.has(cubeName)) {
-                this.addedCubes.delete(cubeName)
-                this.context.sceneController.removeSceneObjectWithName(cubeName)
-            }
-        }
-
-        //right clear
-
-        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
-            const x = centerCursor.x - Math.floor(region * 0.5) + Options.visibleMapRegion + 1
-            const y = centerCursor.y - Math.floor(region * 0.5) + i
-            const cubeName = `cube-${x}-${y}`
-            if (this.addedCubes.has(cubeName)) {
-                this.addedCubes.delete(cubeName)
-                this.context.sceneController.removeSceneObjectWithName(cubeName)
-            }
-        }
-
-        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
-            const x = centerCursor.x - Math.floor(region * 0.5) + Options.visibleMapRegion + 2
-            const y = centerCursor.y - Math.floor(region * 0.5) + i
-            const cubeName = `cube-${x}-${y}`
-            if (this.addedCubes.has(cubeName)) {
-                this.addedCubes.delete(cubeName)
-                this.context.sceneController.removeSceneObjectWithName(cubeName)
-            }
-        }
-
-
+    private deleteCube(name: string) {
+        this.context.sceneController.removeSceneObjectWithName(name)
+        this.addedCubes.delete(name)
     }
 
 }

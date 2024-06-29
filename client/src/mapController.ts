@@ -2,6 +2,7 @@ import { GameMap } from "./gameMap.js";
 import { GameVector2D } from "./gameVector2D.js";
 import { Utils } from "./utils.js";
 import { Options } from "./options.js";
+import { int } from "./types.js";
 
 export class MapController {
 
@@ -11,11 +12,13 @@ export class MapController {
         args: {
             cursor: GameVector2D,
             onlyFloor: boolean,
+            roomFrequency?: int,
             overwrite?: boolean
         }
     ) {
         const {
-            overwrite = false
+            overwrite = false,
+            roomFrequency = 40
         } = args;
 
         const cursor = args.cursor
@@ -40,7 +43,8 @@ export class MapController {
                         })
                     }
                     else {
-                        const isRoom = Utils.randomInt(20) == 0
+                        debugger
+                        const isRoom = Utils.randomInt(roomFrequency) == 0
                         if (isRoom) {
                             this.putRoomAt(
                                 {
