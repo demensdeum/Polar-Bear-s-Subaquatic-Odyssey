@@ -96,7 +96,8 @@ export class InGameState implements State,
                 onlyFloor: true,
                 overwrite: false
             }
-        )        
+        )
+        this.adaptMap()        
     }
 
     private topdownCameraIfNeeded() {
@@ -117,8 +118,23 @@ export class InGameState implements State,
     step(): void {
         this.topdownCameraIfNeeded()
         this.inputController.step()
-        this.generateRegionIfNeeded()
-        this.adaptMap()       
+
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        const heroPositionX = Math.floor(heroPosition.x)
+        const heroPositionY = Math.floor(heroPosition.z)
+
+        const previousHeroX = Math.floor(this.previousHeroPosition.x)
+        const previousHeroY = Math.floor(this.previousHeroPosition.y)
+
+        if (
+            heroPositionX != previousHeroX || 
+            heroPositionY != previousHeroY
+        )
+        {
+            this.generateRegionIfNeeded()
+            this.adaptMap()
+            this.previousHeroPosition = new GameVector2D(heroPositionX, heroPositionY)
+        }
     }
 
     private generateRegionIfNeeded() {

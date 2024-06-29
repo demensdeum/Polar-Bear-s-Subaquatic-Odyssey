@@ -10,4 +10,11 @@ export class GameVector2D {
         this.x = x;
         this.y = y;
     }
+
+    public clone() {
+        return new GameVector2D(
+            this.x,
+            this.y
+        )
+    }
 }
