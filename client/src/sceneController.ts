@@ -1576,7 +1576,7 @@ export class SceneController implements
         sceneObject.changeDate = Utils.timestamp()
     }
 
-    public moveObjectTo(
+    public moveObject(
         args: {
             name: string,
             position: GameVector3
@@ -1594,17 +1594,17 @@ export class SceneController implements
         sceneObject.changeDate = Utils.timestamp()
     }
 
-    public rotateObjectTo(
-        name: string,
-        x: number,
-        y: number,
-        z: number
+    public rotateObject(
+        args: {
+            name: string,
+            rotation: GameVector3
+        }
     ): void
     {
-        const sceneObject = this.sceneObject(name);
-        sceneObject.threeObject.rotation.x = x;
-        sceneObject.threeObject.rotation.y = y;
-        sceneObject.threeObject.rotation.z = z;
+        const sceneObject = this.sceneObject(args.name);
+        sceneObject.threeObject.rotation.x = args.rotation.x;
+        sceneObject.threeObject.rotation.y = args.rotation.y;
+        sceneObject.threeObject.rotation.z = args.rotation.z;
         sceneObject.changeDate = Utils.timestamp()
     }  
 }

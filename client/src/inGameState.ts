@@ -5,13 +5,14 @@ import { DecorControls } from "./decorControls.js"
 import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
 import { Names } from "./names.js"
 import { GameVector3 } from "./gameVector3.js"
+import { Utils } from "./utils.js"
 
 export class InGameState implements State {
 
     public name: string
     context: Context
 
-    private cubeX = 0;
+    private topCamera = true;
 
     constructor(
         name: string,
@@ -25,11 +26,18 @@ export class InGameState implements State {
         debugPrint("InGameState initialized")
         debugPrint(this.context)
 
+        this.context.sceneController.switchSkyboxIfNeeded(
+            {
+                name: "com.demensdeum.arctic.black",
+                environmentOnly: false
+            }
+        )        
+
         this.context.sceneController.addModelAt(
             {
                 name: Names.Hero,
                 modelName: "com.demensdeum.hero",
-                position: new GameVector3(0, 0, 0),
+                position: new GameVector3(0, 0, -2),
                 rotation: new GameVector3(0, 0, 0),
                 isMovable: true,
                 controls: new DecorControls(
@@ -49,7 +57,7 @@ export class InGameState implements State {
             {
                 name: "cube",
                 modelName: "com.demensdeum.arctica.cube",
-                position: new GameVector3(0, 0, -2),
+                position: new GameVector3(0, -1, -2),
                 rotation: new GameVector3(0, 0, 0),
                 isMovable: true,
                 controls: new DecorControls(
@@ -64,23 +72,23 @@ export class InGameState implements State {
                 )
             }
         )
-
-        this.context.sceneController.moveObjectTo(
-            {
-                name: Names.Camera,
-                position: new GameVector3(0, 0, 0)
-            }
-        )
     }
 
     step(): void {
-        this.context.sceneController.rotateObjectTo(
-            "cube",
-            0,
-            this.cubeX,
-            0
-        )
-        this.cubeX += 0.04
+
+        if (this.topCamera) {
+            this.context.sceneController.moveObject(
+                {
+                    name: Names.Camera,
+                    position: new GameVector3(0, 2, 0.4)
+                }
+            )
+                this.context.sceneController.rotateObject({
+                    name: Names.Camera,
+                    rotation: new GameVector3(Utils.degreesToRadians(-45), 0, 0)
+                }
+            )
+        }
     }
 
 }
