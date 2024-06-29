@@ -11,6 +11,8 @@ import { InputControllerDelegate } from "./inputControllerDelegate.js"
 import { GameInputEvent } from "./gameInputEvent.js"
 import { GameInputMouseEvent } from "./gameInputMouseEvent.js"
 import { GameInputMouseEventNames } from "./gameInputMouseEventNames.js"
+import { MapController } from "./mapController.js"
+import { MapAdapter } from "./mapAdapter.js"
 
 export class InGameState implements State,
     InputControllerDelegate {
@@ -23,6 +25,9 @@ export class InGameState implements State,
     private inputController: InputController
     private canvas: HTMLCanvasElement
 
+    private mapController: MapController
+    private mapAdapter: MapAdapter
+
     constructor(
         name: string,
         canvas: HTMLCanvasElement,
@@ -32,6 +37,8 @@ export class InGameState implements State,
         this.context = context
         this.canvas = canvas
         this.inputController = new InputController(this.canvas, this)
+        this.mapController =  new MapController()
+        this.mapAdapter = new MapAdapter(context)
     }
 
     initialize(): void {
@@ -41,6 +48,10 @@ export class InGameState implements State,
         debugPrint(this.canvas)
         debugPrint(this.inputController)
 
+        this.initializeLevel()
+    }
+
+    private initializeLevel() {
         this.context.sceneController.switchSkyboxIfNeeded(
             {
                 name: "com.demensdeum.arctic.black",
@@ -68,25 +79,11 @@ export class InGameState implements State,
             }
         )
 
-        this.context.sceneController.addModelAt(
-            {
-                name: "cube",
-                modelName: "com.demensdeum.arctica.cube",
-                position: new GameVector3(0, -1, 0),
-                rotation: new GameVector3(0, 0, 0),
-                isMovable: true,
-                controls: new DecorControls(
-                    "cube",
-                    new SceneObjectCommandIdle(
-                        "idle",
-                        0
-                    ),
-                    this.context.sceneController,
-                    this.context.sceneController,
-                    this.context.sceneController
-                )
-            }
-        )
+        this.mapController.initializeMap()
+
+        this.mapAdapter.adapt({
+            map: this.mapController.map
+        })
     }
 
     private topdownCameraIfNeeded() {
@@ -110,10 +107,7 @@ export class InGameState implements State,
     }
 
     inputControllerDidReceive<T>(_: InputController, inputEvent: GameInputEvent<T>): void {
-        debugPrint(inputEvent)
         if (inputEvent instanceof GameInputMouseEvent) {
-            debugPrint(inputEvent.value.x)
-            debugPrint(inputEvent.value.y)
             const diffX = inputEvent.value.x
             const diffY = inputEvent.value.y
 
