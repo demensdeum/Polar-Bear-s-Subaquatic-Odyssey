@@ -84,7 +84,19 @@ export class InGameState implements State,
 
         debugPrint(this.previousHeroPosition)
 
-        this.mapController.initializeMap()
+        this.previousHeroPosition = this.mapController.map.startPoint
+
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        const heroPositionX = Math.floor(heroPosition.x)
+        const heroPositionY = Math.floor(heroPosition.z)
+        const centerCursor = new GameVector2D(heroPositionX, heroPositionY)        
+        this.mapController.generateRegion(
+            {
+                cursor: centerCursor,
+                onlyFloor: true,
+                overwrite: false
+            }
+        )        
     }
 
     private topdownCameraIfNeeded() {
@@ -105,13 +117,29 @@ export class InGameState implements State,
     step(): void {
         this.topdownCameraIfNeeded()
         this.inputController.step()
-        this.adaptMap()
+        this.generateRegionIfNeeded()
+        this.adaptMap()       
+    }
+
+    private generateRegionIfNeeded() {
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        const heroPositionX = Math.floor(heroPosition.x)
+        const heroPositionY = Math.floor(heroPosition.z)
+        const centerCursor = new GameVector2D(heroPositionX, heroPositionY)  
+        debugPrint(`Coordinates: ${heroPositionX} ${heroPositionY}`)      
+        this.mapController.generateRegion(
+            {
+                cursor: centerCursor,
+                onlyFloor: false,
+                overwrite: false
+            }
+        )        
     }
 
     private adaptMap() {
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         const heroPositionX = Math.floor(heroPosition.x)
-        const heroPositionY = Math.floor(heroPosition.y)
+        const heroPositionY = Math.floor(heroPosition.z)
         const centerCursor = new GameVector2D(heroPositionX, heroPositionY)
         this.mapAdapter.adapt({
             centerCursor: centerCursor,

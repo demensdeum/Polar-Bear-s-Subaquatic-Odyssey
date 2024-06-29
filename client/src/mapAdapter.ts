@@ -25,23 +25,24 @@ export class MapAdapter {
     }) {
         const map = args.map
         const centerCursor = args.centerCursor;
-        const range = 6
-        for (var cursorY = centerCursor.y - range * 0.5; cursorY < centerCursor.y + range; cursorY++) {
-            for (var cursorX = centerCursor.x - range * 0.5; cursorX < centerCursor.x + range; cursorX++) {
+        const region = 6
+        for (var cursorY = centerCursor.y - region * 0.5; cursorY < centerCursor.y + region; cursorY++) {
+            for (var cursorX = centerCursor.x - region * 0.5; cursorX < centerCursor.x + region; cursorX++) {
                 const tile = map.tileAt({
                     position: new GameVector2D(cursorX, cursorY)
                 })
-                if (tile && tile.isSolid == false) {
+                if (tile) {
                     const cubeName = `cube-${cursorX}-${cursorY}`
                     if (this.addedCubes.has(cubeName)) {
                         continue
                     }
                     this.addedCubes.add(cubeName)
+                    const cubeY = tile.isSolid ? 0 : -1
                     this.context.sceneController.addModelAt(
                         {
                             name: cubeName,
                             modelName: "com.demensdeum.arctica.cube",
-                            position: new GameVector3(cursorX, -1, cursorY),
+                            position: new GameVector3(cursorX, cubeY, cursorY),
                             rotation: new GameVector3(0, 0, 0),
                             isMovable: true,
                             controls: new DecorControls(

@@ -1,20 +1,49 @@
 import { GameMap } from "./gameMap.js";
 import { GameVector2D } from "./gameVector2D.js";
+import { Utils } from "./utils.js";
 
 export class MapController {
 
     public map = new GameMap()
 
-    public initializeMap() {
-        this.map = new GameMap()
-        this.map.startPoint = new GameVector2D(0, 0)
-        for (var y = 0; y < 5; y++) {
-            for (var x = 0; x < 5; x++) {
-                const cursorX = this.map.startPoint.x - 2 + x
-                const cursorY = this.map.startPoint.y - 2 + y
-                this.map.setFloor({
-                    position: new GameVector2D(cursorX, cursorY)
-                })
+    public generateRegion(
+        args: {
+            cursor: GameVector2D,
+            onlyFloor: boolean,
+            overwrite?: boolean
+        }
+    ) {
+        const {
+            overwrite = false
+        } = args;
+
+        const cursor = args.cursor
+        const region = 6
+        for (var y = 0; y < region; y++) {
+            for (var x = 0; x < region; x++) {
+                const cursorX = cursor.x - region * 0.5 + x
+                const cursorY = cursor.y - region * 0.5 + y
+                if (!overwrite && this.map.tileAt({position: new GameVector2D(cursorX, cursorY)})) {
+                    continue
+                }
+                if (args.onlyFloor) {
+                    this.map.setFloor({
+                        position: new GameVector2D(cursorX, cursorY)
+                    })
+                }
+                else {
+                    const isSolid = Utils.randomBool()
+                    if (isSolid) {
+                        this.map.setWall({
+                            position: new GameVector2D(cursorX, cursorY)
+                        })
+                    }
+                    else {
+                        this.map.setFloor({
+                            position: new GameVector2D(cursorX, cursorY)
+                        })
+                    }
+                }
             }
         }
     }
