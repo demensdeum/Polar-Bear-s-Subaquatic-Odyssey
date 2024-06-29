@@ -40,13 +40,46 @@ export class MapController {
                         })
                     }
                     else {
-                        this.map.setFloor({
-                            position: new GameVector2D(cursorX, cursorY)
-                        })
+                        const isRoom = Utils.randomInt(20) == 0
+                        if (isRoom) {
+                            this.putRoomAt(
+                                {
+                                    centerCursor: new GameVector2D(cursorX, cursorY)
+                                }
+                            )
+                        }
+                        else {
+                            this.map.setFloor({
+                                position: new GameVector2D(cursorX, cursorY)
+                            })
+                        }
                     }
                 }
             }
         }
+    }
+
+    private putRoomAt(args: {
+        centerCursor: GameVector2D
+    })
+    {
+        const centerCursor = args.centerCursor
+        const roomSizeWidth = 5 + Utils.randomInt(Options.visibleMapRegion)
+        const roomSizeHeight = 5 + Utils.randomInt(Options.visibleMapRegion)
+
+        const startCursorX = centerCursor.x - Math.floor(roomSizeWidth * 0.5)
+        const startCursorY = centerCursor.y - Math.floor(roomSizeHeight * 0.5)
+
+        for (var y = 0; y < roomSizeHeight; y++) {
+            for (var x = 0; x < roomSizeWidth; x++) {
+                const cursorX = startCursorX + x;
+                const cursorY = startCursorY + y;
+                this.map.setFloor({
+                    position: new GameVector2D(cursorX, cursorY)
+                })
+            }
+        }
+
     }
 
 }

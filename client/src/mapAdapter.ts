@@ -62,7 +62,64 @@ export class MapAdapter {
             }
         }
 
-        debugPrint(map)
+        // top clear
+        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
+            const x = centerCursor.x - Math.floor(region * 0.5) + i
+            const y = centerCursor.y - Math.floor(region * 0.5) - 1
+            const cubeName = `cube-${x}-${y}`
+            if (this.addedCubes.has(cubeName)) {
+                this.addedCubes.delete(cubeName)
+                this.context.sceneController.removeSceneObjectWithName(cubeName)
+            }
+        }
+
+        // bottom clear
+
+        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
+            const x = centerCursor.x - Math.floor(region * 0.5) + i
+            const y = centerCursor.y - Math.floor(region * 0.5) + Options.visibleMapRegion + 1
+            const cubeName = `cube-${x}-${y}`
+            if (this.addedCubes.has(cubeName)) {
+                this.addedCubes.delete(cubeName)
+                this.context.sceneController.removeSceneObjectWithName(cubeName)
+            }
+        }
+
+        // left clear
+
+        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
+            const x = centerCursor.x - Math.floor(region * 0.5) - 1
+            const y = centerCursor.y - Math.floor(region * 0.5) + i
+            const cubeName = `cube-${x}-${y}`
+            if (this.addedCubes.has(cubeName)) {
+                this.addedCubes.delete(cubeName)
+                this.context.sceneController.removeSceneObjectWithName(cubeName)
+            }
+        }
+
+        //right clear
+
+        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
+            const x = centerCursor.x - Math.floor(region * 0.5) + Options.visibleMapRegion + 1
+            const y = centerCursor.y - Math.floor(region * 0.5) + i
+            const cubeName = `cube-${x}-${y}`
+            if (this.addedCubes.has(cubeName)) {
+                this.addedCubes.delete(cubeName)
+                this.context.sceneController.removeSceneObjectWithName(cubeName)
+            }
+        }
+
+        for (var i = -1; i < Options.visibleMapRegion + 1; i++) {
+            const x = centerCursor.x - Math.floor(region * 0.5) + Options.visibleMapRegion + 2
+            const y = centerCursor.y - Math.floor(region * 0.5) + i
+            const cubeName = `cube-${x}-${y}`
+            if (this.addedCubes.has(cubeName)) {
+                this.addedCubes.delete(cubeName)
+                this.context.sceneController.removeSceneObjectWithName(cubeName)
+            }
+        }
+
+
     }
 
 }

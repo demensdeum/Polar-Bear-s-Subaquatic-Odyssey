@@ -103,8 +103,17 @@ export class InGameState implements State,
     }
 
     private moveCamera() {
+
+        const debugCamera = true
+        const cameraY = debugCamera ? 4 : 2
+        const cameraZ = debugCamera ? 4 : 1.4
+
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
-        const cameraPosition = new GameVector3(heroPosition.x, heroPosition.y + 2, heroPosition.z + 1.4)
+        const cameraPosition = new GameVector3(
+            heroPosition.x, 
+            heroPosition.y + cameraY, 
+            heroPosition.z + cameraZ
+        )
         this.context.sceneController.moveAndRotateObject(
             {
                 name: Names.Camera,

@@ -1,3 +1,3 @@
 export class Options {
-    static visibleMapRegion = 9
+    static visibleMapRegion = 7
 }
