@@ -1306,28 +1306,37 @@ export class SceneController implements
     }
 
     public objectPlayAnimation(
-        objectName: string,
-        animationName: string
+        args: {
+            name: string,
+            animationName: string
+        }
     )
     {
-        const animationKey = `${objectName}_${animationName}`
+        const name = args.name
+        const animationName = args.animationName
+
+        const animationKey = `${name}_${animationName}`
         if (animationKey in this.animationContainers) {
             debugPrint(`animation already playing: ${animationName}`)
             return
         }
 
         this.animationContainers[animationKey] = new AnimationContainer(
-            this.sceneObject(objectName),
+            this.sceneObject(name),
             animationName
         )
     }
 
     public objectStopAnimation(
-        objectName: string,
-        animationName: string
+        args: {
+            name: string,
+            animationName: string
+        }
     )
     {
-        const animationKey = `${objectName}_${animationName}`        
+        const name = args.name
+        const animationName = args.animationName
+        const animationKey = `${name}_${animationName}`        
         if (animationKey in this.animationContainers) {
             delete this.animationContainers[animationKey]
         }

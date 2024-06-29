@@ -1,6 +1,7 @@
 import { InputControllerDelegate } from "./inputControllerDelegate"
 import { GameInputMouseEvent } from "./gameInputMouseEvent.js";
 import { GameVector2D } from "./gameVector2D.js";
+import { GameInputMouseEventNames } from "./gameInputMouseEventNames.js";
 
 export class InputController {
 
@@ -75,11 +76,24 @@ export class InputController {
     public step() {
         if (this.isTouching) {
             const xLimit = this.canvas.width;
+            const yLimit = this.canvas.height;
             var xAspect = (this.currentTouchX - this.touchStartX) / xLimit;
             xAspect = Math.min(xLimit, xAspect);
-            const yAspect = this.currentTouchY / this.canvas.height
-            const mouseEvent = new GameInputMouseEvent(new GameVector2D(xAspect, yAspect));
+            const yAspect = (this.currentTouchY - this.touchStartY) / yLimit;
+            const mouseEvent = new GameInputMouseEvent(
+                {
+                    name: GameInputMouseEventNames.MouseMove,
+                    value: new GameVector2D(xAspect, yAspect)
+                }
+            )
             this.delegate.inputControllerDidReceive(this, mouseEvent);        
+        }
+        else {
+            const mouseEvent = new GameInputMouseEvent({
+                name: GameInputMouseEventNames.MouseUp,
+                value: new GameVector2D(0, 0)
+            })
+            this.delegate.inputControllerDidReceive(this, mouseEvent)
         }
     }
 }
