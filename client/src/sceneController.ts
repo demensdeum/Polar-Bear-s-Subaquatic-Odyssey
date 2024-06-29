@@ -1576,6 +1576,18 @@ export class SceneController implements
         sceneObject.changeDate = Utils.timestamp()
     }
 
+    public moveAndRotateObject(
+        args: {
+        name: string,
+        position: GameVector3,
+        rotation: GameVector3
+        }
+    )
+    {
+        this.moveObject({name: args.name, position: args.position})
+        this.rotateObject({name: args.name, rotation: args.rotation})
+    }
+
     public moveObject(
         args: {
             name: string,

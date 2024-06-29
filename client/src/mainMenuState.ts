@@ -2,6 +2,7 @@ import { State } from "./state.js"
 import { Context } from "./context.js"
 import { InGameState } from "./inGameState.js"
 import { GameVector3 } from "./gameVector3.js"
+import { raiseCriticalError } from "./runtime.js"
 declare function _t(key: string): string;
 
 export class MainMenuState implements State {
@@ -134,12 +135,20 @@ export class MainMenuState implements State {
     public playButtonDidPress() {
         this.context.sceneController.removeAllSceneObjectsExceptCamera();
         
-        const ingameState = new InGameState(
-            "initializationScreenState",
-            this.context
-        )
+        const canvas = this.context.canvas
 
-        this.context.transitionTo(ingameState)
+        if (canvas) {
+            const ingameState = new InGameState(
+                "initializationScreenState",
+                canvas,
+                this.context
+            )
+
+            this.context.transitionTo(ingameState)
+        }
+        else {
+            raiseCriticalError("Can't start game - canvas is null!!!11")
+        }
     }
 
 }

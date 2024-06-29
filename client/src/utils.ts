@@ -22,6 +22,10 @@ export class Utils {
         }
     }
 
+    public static getCanvas(): HTMLCanvasElement | null {
+        return document.querySelector("canvas") ?? null
+    }
+
     public static showHtmlFlexElement(
         args: {
             name: string
