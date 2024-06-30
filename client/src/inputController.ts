@@ -2,14 +2,15 @@ import { InputControllerDelegate } from "./inputControllerDelegate"
 import { GameInputMouseEvent } from "./gameInputMouseEvent.js";
 import { GameVector2D } from "./gameVector2D.js";
 import { GameInputMouseEventNames } from "./gameInputMouseEventNames.js";
+import { debugPrint } from "./runtime.js";
 
 export class InputController {
 
     private isTouching: boolean = false;
     private touchStartX: number = 0;
     private touchStartY: number = 0;
-    private currentTouchX: number = 0;
-    private currentTouchY: number = 0;
+    private currentTouchX: number = -1;
+    private currentTouchY: number = -1;
 
     private canvas: HTMLCanvasElement;
     private delegate: InputControllerDelegate;
@@ -28,6 +29,7 @@ export class InputController {
         canvas.addEventListener('mousemove', (e)=> inputController.onMouseMove(e));
         canvas.addEventListener('touchstart', (e)=>inputController.onTouchStart(e), false);
         canvas.addEventListener('touchend', (e)=>inputController.onTouchEnd(e), false);
+        canvas.addEventListener('touchcancel', (e)=>inputController.onTouchEnd(e), false);
         canvas.addEventListener('touchmove', (e)=>inputController.onTouchMove(e), false);
     }
 
@@ -51,30 +53,32 @@ export class InputController {
     }      
 
     private onTouchStart(event: TouchEvent) {
-        if (event.touches.length > 0) {
+        if (event.touches.length == 1) {
             this.isTouching = true;            
             this.touchStartX = event.touches[0].pageX;
             this.touchStartY = event.touches[0].pageY;
         }
     }
 
-    private onTouchEnd(event: TouchEvent) {
-        if (event.touches.length > 0) {
-            this.isTouching = false;        
-            this.touchStartX = 0;
-            this.touchStartY = 0;
-        }        
+    private onTouchEnd(_: TouchEvent) {
+        this.isTouching = false;        
+        this.touchStartX = 0;
+        this.touchStartY = 0;
     }
 
     private onTouchMove(event: TouchEvent) {
-        if (event.touches.length > 0) {
+        if (event.touches.length == 1) {
+            debugPrint(`currentTouchX: ${this.currentTouchX} | currentTouchY: ${this.currentTouchY}`)
             this.currentTouchX = event.touches[0].pageX;
-            this.currentTouchX = event.touches[0].pageY;            
+            this.currentTouchY = event.touches[0].pageY;            
         }
     }
 
     public step() {
         if (this.isTouching) {
+            if (this.currentTouchX == -1 || this.currentTouchY == -1) {
+                return
+            }
             const xLimit = this.canvas.width;
             const yLimit = this.canvas.height;
             var xAspect = (this.currentTouchX - this.touchStartX) / xLimit;

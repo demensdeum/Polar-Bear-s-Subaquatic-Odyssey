@@ -143,7 +143,7 @@ export class InGameState implements State,
         hud.innerHTML = `test`
         hud.style.color = "white"
         hud.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
-        hud.style.fontSize = "33px"
+        hud.style.fontSize = "43px"
         hud.style.padding = "8px"         
 
         this.context.sceneController.addCssPlaneObject(
@@ -190,7 +190,6 @@ export class InGameState implements State,
         projectileButton.style.color = "clear"
         projectileButton.style.backgroundColor = 'rgba(128, 128, 128, 0.0)'
 
-        debugger
         this.context.sceneController.addCssPlaneObject(
             {
                 name: "fireButton",
@@ -466,10 +465,13 @@ export class InGameState implements State,
                     if (
                         this.mapController.isSolid(
                             {position: new GameVector2D(solidCheckX, solidCheckY)}
+                        ) ||
+                        this.mapController.isShark(
+                            {position: new GameVector2D(solidCheckX, solidCheckY)}
                         )
                     )
                     {
-                        debugPrint("Can't move - wall")
+                        debugPrint("Can't move - wall or shark")
                         return
                     }
                 }
