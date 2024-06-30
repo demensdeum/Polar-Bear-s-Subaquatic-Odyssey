@@ -15,6 +15,7 @@ import { MapController } from "./mapController.js"
 import { MapAdapter } from "./mapAdapter.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { Paths } from "./paths.js"
+//import { float } from "./types.js"
 
 export class InGameState implements State,
     InputControllerDelegate {
@@ -26,6 +27,7 @@ export class InGameState implements State,
 
     private projectile?: string | null
     private projectileRotation = GameVector3.zero()
+    //private projectileDistance: float = 0
 
     private isMoveAnimationPlaying = false
     private inputController: InputController
@@ -74,7 +76,7 @@ export class InGameState implements State,
         this.projectile = "apple"
         const projectile = this.projectile!
         const startPosition = this.context.sceneController.sceneObjectPosition(Names.Hero).clone()
-        startPosition.y -= 0.5
+        startPosition.y -= 0.3
         this.context.sceneController.moveObject({
             name: projectile,
             position: startPosition
@@ -82,6 +84,8 @@ export class InGameState implements State,
         this.projectileRotation = this.context.sceneController.sceneObjectRotation(Names.Hero).clone()
         this.projectileRotation.y += Utils.degreesToRadians(180)
         this.applesCount -= 1
+
+        this.moveProjectile()
     }
 
     private moveProjectile() {
@@ -97,6 +101,7 @@ export class InGameState implements State,
         const ratio = 0.06
         const position = this.context.sceneController.sceneObjectPosition(projectile).clone()
         position.x += diffX * ratio
+        position.y -= 0.01
         position.z += diffY * ratio
 
         this.context.sceneController.moveObject(
@@ -105,6 +110,18 @@ export class InGameState implements State,
                 position: position
             }
         )
+
+        if (position.y <= -0.7) {
+            this.hideProjectile()
+            return
+        }
+
+        // this.projectileDistance += ratio * (Math.abs(diffX) + Math.abs(diffY))
+
+        // if (this.projectileDistance >= 4) {
+        //     this.hideProjectile()
+        //     return
+        // }
 
         const checkPositionX = Math.floor(position.x + 0.5)
         const checkPositionY = Math.floor(position.z + 0.5)
@@ -127,6 +144,7 @@ export class InGameState implements State,
 
     private hideProjectile() {
         this.projectile = null
+        //this.projectileDistance = 0
         const position = this.context.sceneController.sceneObjectPosition("apple")
         position.y = -2
         this.context.sceneController.moveObject(
@@ -143,8 +161,8 @@ export class InGameState implements State,
         hud.innerHTML = `test`
         hud.style.color = "white"
         hud.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
-        hud.style.fontSize = "43px"
-        hud.style.padding = "8px"         
+        hud.style.fontSize = "53px"
+        hud.style.padding = "16px"         
 
         this.context.sceneController.addCssPlaneObject(
             {
@@ -155,9 +173,9 @@ export class InGameState implements State,
                     height: 2
                 },
                 position: new GameVector3(
-                        -3,
-                        6,
-                        -10
+                        -2,
+                        5,
+                        -8
                 ),
                 rotation: GameVector3.zero(),
                 scale: new GameVector3(
@@ -222,6 +240,7 @@ export class InGameState implements State,
     }
 
     private initializeLevel() {
+        //this.projectileDistance = 0
         this.context.sceneController.removeAllSceneObjectsExceptCamera()
         this.mapController =  new MapController()
         this.mapAdapter = new MapAdapter(this.context)        
@@ -308,7 +327,20 @@ export class InGameState implements State,
         let lightPosition = this.context.sceneController.sceneObjectPosition(
             Names.Hero
         ).clone()
-        lightPosition.y += 1.45
+        lightPosition.y += 1
+
+        const heroRotation = this.context.sceneController.sceneObjectRotation(Names.Hero).clone()
+        heroRotation.y += Utils.degreesToRadians(180)
+        const diffX = Math.sin(heroRotation.y)
+        const diffY = Math.cos(heroRotation.y)
+
+        const ratio = 0.5
+        const newX = lightPosition.x + diffX * ratio
+        const newY = lightPosition.z + diffY * ratio
+
+        lightPosition.x = newX
+        lightPosition.z = newY
+
         this.context.sceneController.moveLight({position: lightPosition})
     }
 
@@ -446,12 +478,18 @@ export class InGameState implements State,
                     Names.Hero
                 ).clone()                
 
-                const deumMode = true
+                const deumMode = false
                 const speedLimit = deumMode ? 0.1 : 0.02
-                const ratio = 0.2
+                const ratio = deumMode ? 0.2 : 0.12
 
-                const diffX = Math.min(inputDiffX * ratio, speedLimit)
-                const diffY = Math.min(inputDiffY * ratio, speedLimit)
+                const diffXnegative = inputDiffX < 0
+                const diffYnegative = inputDiffY < 0
+
+                var diffX = Math.min(Math.abs(inputDiffX * ratio), Math.abs(speedLimit))
+                var diffY = Math.min(Math.abs(inputDiffY * ratio), Math.abs(speedLimit))
+
+                diffX = diffXnegative ? -diffX : diffX
+                diffY = diffYnegative ? -diffY : diffY
 
                 targetPosition.x += diffX
                 targetPosition.z += diffY
