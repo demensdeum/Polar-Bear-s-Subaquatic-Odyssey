@@ -62,6 +62,86 @@ export class MapController {
         }
     }
 
+    public putExitRandomly(args:{
+        startCursor: GameVector2D
+    }) {
+        const startCursor = args.startCursor
+        var cursor = startCursor.clone()
+        const rounds = 6 + Utils.randomInt(10)
+        for (var i = 0; i < rounds; i++) {
+            const cursorDirectionRandom = Utils.randomInt(4)
+            switch (cursorDirectionRandom) {
+                case 0:
+                    cursor = this.drawLineUp({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                case 1:
+                    cursor = this.drawLineLeft({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                case 2:
+                    cursor = this.drawLineRight({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                case 3:
+                    cursor = this.drawLineDown({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+            }
+        }
+        this.map.setFloor({position: cursor})
+        this.map.setTeleport({position: cursor})
+    }
+
+    private drawLineUp(args: {
+        startCursor: GameVector2D,
+        length: int
+    }): GameVector2D
+    {
+        const length = args.length
+        let cursor = args.startCursor.clone()
+        for (var i = 0; i < length; i++) {
+            this.map.setFloor({position: cursor})
+            cursor.y -= 1
+        }
+        debugger
+        return cursor
+    }
+
+    private drawLineDown(args: {
+        startCursor: GameVector2D,
+        length: int
+    }): GameVector2D
+    {
+        const length = args.length
+        let cursor = args.startCursor.clone()
+        for (var i = 0; i < length; i++) {
+            this.map.setFloor({position: cursor})
+            cursor.y += 1
+        }
+        return cursor
+    }
+
+    private drawLineLeft(args: {
+        startCursor: GameVector2D,
+        length: int
+    }): GameVector2D
+    {
+        const length = args.length
+        let cursor = args.startCursor.clone()
+        for (var i = 0; i < length; i++) {
+            this.map.setFloor({position: cursor})
+            cursor.x -= 1
+        }
+        return cursor
+    }
+
+    private drawLineRight(args: {
+        startCursor: GameVector2D,
+        length: int
+    }): GameVector2D
+    {
+        const length = args.length
+        let cursor = args.startCursor.clone()
+        for (var i = 0; i < length; i++) {
+            this.map.setFloor({position: cursor})
+            cursor.x += 1
+        }
+        return cursor
+    }
+
     private putRoomAt(args: {
         centerCursor: GameVector2D
     })

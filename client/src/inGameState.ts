@@ -54,6 +54,7 @@ export class InGameState implements State,
     }
 
     private initializeLevel() {
+        this.context.sceneController.removeAllSceneObjectsExceptCamera()
         this.context.sceneController.switchSkyboxIfNeeded(
             {
                 name: "com.demensdeum.arctic.black",
@@ -67,7 +68,7 @@ export class InGameState implements State,
         this.context.sceneController.addModelAt(
             {
                 name: Names.Hero,
-                modelName: "com.demensdeum.hero",
+                modelName: "com.demensdeum.arctica.hero",
                 position: startHeroPosition,
                 rotation: new GameVector3(0, 0, 0),
                 isMovable: true,
@@ -97,6 +98,12 @@ export class InGameState implements State,
                 cursor: centerCursor,
                 onlyFloor: true,
                 overwrite: false
+            }
+        )
+
+        this.mapController.putExitRandomly(
+            {
+                startCursor: centerCursor
             }
         )
 

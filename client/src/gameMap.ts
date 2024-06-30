@@ -5,6 +5,20 @@ export class GameMap {
     
     public tiles: { [key: string]: GameMapTile } = {};
 
+    public setTeleport(args: {
+        position: GameVector2D
+    })
+    {
+        const position = args.position 
+        const key = `${position.x}-${position.y}`
+        this.tiles[key] = new GameMapTile(
+            {
+                isSolid: false,
+                containsTeleport: true
+            }
+        )
+    }
+
     public tileAt(args :{
         position: GameVector2D
     })

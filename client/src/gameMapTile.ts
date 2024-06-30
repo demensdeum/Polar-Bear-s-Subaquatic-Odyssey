@@ -1,25 +1,33 @@
 export class GameMapTile {
     public readonly isSolid: boolean
-    private items = new Set<string>()
+    public readonly containsTeleport: boolean
+
+    private childsNames = new Set<string>()
 
     constructor(
         args: {
             isSolid: boolean
+            containsTeleport?: boolean
         }
     )
     {
+        const {
+            containsTeleport = false
+        } = args
+
         this.isSolid = args.isSolid
+        this.containsTeleport = containsTeleport
     }
 
-    public addItem(name: string) {
-        this.items.add(name)
+    public addChild(name: string) {
+        this.childsNames.add(name)
     }
 
-    public hasItem(name: string) {
-        return this.items.has(name)
+    public hasChild(name: string) {
+        return this.childsNames.has(name)
     }
 
-    public forEachItem(closure: (item: string)=>void) {
-        this.items.forEach(closure)
+    public forEachChild(closure: (child: string)=>void) {
+        this.childsNames.forEach(closure)
     }
 }

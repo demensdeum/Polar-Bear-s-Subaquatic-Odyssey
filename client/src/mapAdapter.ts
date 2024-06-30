@@ -7,6 +7,7 @@ import { GameVector3 } from "./gameVector3.js"
 import { Options } from "./options.js"
 import { debugPrint } from "./runtime.js"
 import { SceneObjectCommandIdle } from "./sceneObjectCommandIdle.js"
+import { Utils } from "./utils.js"
 
 export class MapAdapter {
 
@@ -50,7 +51,7 @@ export class MapAdapter {
                     this.context.sceneController.addModelAt(
                         {
                             name: cubeName,
-                            modelName: tile.isSolid ? "com.demensdeum.arctica.wall" : "com.demensdeum.arctica.floor",
+                            modelName: tile.isSolid ? "com.demensdeum.arctica.floor" : "com.demensdeum.arctica.wall",
                             position: new GameVector3(cursorX, cubeY, cursorY),
                             rotation: new GameVector3(0, 0, 0),
                             isMovable: true,
@@ -68,6 +69,28 @@ export class MapAdapter {
                             opacity: tile.isSolid ? 0.8 : 1.0
                         }
                     )
+                    if (tile.containsTeleport) {
+                        const teleportName = `teleport-${cubeName}`
+                        this.context.sceneController.addModelAt(
+                            {
+                                name: teleportName,
+                                modelName: "com.demensdeum.arctica.teleport",
+                                position: new GameVector3(cursorX, 0, cursorY),
+                                rotation: new GameVector3(0, Utils.degreesToRadians(Utils.randomInt(360)), 0),
+                                isMovable: true,
+                                controls: new DecorControls(
+                                    "cube",
+                                    new SceneObjectCommandIdle(
+                                        "idle",
+                                        0
+                                    ),
+                                    this.context.sceneController,
+                                    this.context.sceneController,
+                                    this.context.sceneController
+                                ),
+                            }
+                        )                        
+                    }
                 }
             }
         }
@@ -83,7 +106,7 @@ export class MapAdapter {
         name: string,
         tile: GameMapTile
     }) {
-        args.tile.forEachItem(x => this.context.sceneController.removeSceneObjectWithName(x))
+        args.tile.forEachChild(x => this.context.sceneController.removeSceneObjectWithName(x))
         this.context.sceneController.removeSceneObjectWithName(args.name)
         this.addedTilesNames.delete(args.name)
     }
