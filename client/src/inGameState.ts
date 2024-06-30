@@ -257,25 +257,43 @@ export class InGameState implements State,
 
     inputControllerDidReceive<T>(_: InputController, inputEvent: GameInputEvent<T>): void {
         if (inputEvent instanceof GameInputMouseEvent) {
-            const diffX = inputEvent.value.x
-            const diffY = inputEvent.value.y
+            const inputDiffX = inputEvent.value.x
+            const inputDiffY = inputEvent.value.y
 
             if (inputEvent.name == GameInputMouseEventNames.MouseMove) {
-                let position = this.context.sceneController.sceneObjectPosition(
+                let targetPosition = this.context.sceneController.sceneObjectPosition(
                     Names.Hero
-                )
+                ).clone()
+
+                let solidCheckPosition = this.context.sceneController.sceneObjectPosition(
+                    Names.Hero
+                ).clone()                
 
                 const deumMode = true
-                const speedLimit = 0.02
+                const speedLimit = deumMode ? 0.1 : 0.02
                 const ratio = 0.2
 
-                if (deumMode) {
-                    position.x += diffX
-                    position.z += diffY
-                }
-                else {
-                    position.x += Math.min(diffX * ratio, speedLimit)
-                    position.z += Math.min(diffY * ratio, speedLimit)
+                const diffX = Math.min(inputDiffX * ratio, speedLimit)
+                const diffY = Math.min(inputDiffY * ratio, speedLimit)
+
+                targetPosition.x += diffX
+                targetPosition.z += diffY
+
+                solidCheckPosition.x += 0.5 + diffX * 2
+                solidCheckPosition.z += 0.5 + diffY * 2
+
+                {
+                    const solidCheckX = Math.floor(solidCheckPosition.x)
+                    const solidCheckY = Math.floor(solidCheckPosition.z)
+                    if (
+                        this.mapController.isSolid(
+                            {position: new GameVector2D(solidCheckX, solidCheckY)}
+                        )
+                    )
+                    {
+                        debugPrint("Can't move - wall")
+                        return
+                    }
                 }
 
                 if (this.isMoveAnimationPlaying == false) {
@@ -289,13 +307,13 @@ export class InGameState implements State,
                 this.context.sceneController.moveObject(
                     {
                         name: Names.Hero,
-                        position: position
+                        position: targetPosition
                     }
                 )
 
                 const rotationY = Math.atan2(
-                    diffX,
-                    diffY,
+                    inputDiffX,
+                    inputDiffY,
                 )
     
                 this.context.sceneController.rotateObject(
@@ -307,12 +325,12 @@ export class InGameState implements State,
             }
             else if (inputEvent.name == GameInputMouseEventNames.MouseUp) {
                 this.isMoveAnimationPlaying = false
-                this.context.sceneController.objectStopAnimation(
-                    {
-                        name: Names.Hero,
-                        animationName: "walk"
-                    }
-                )
+                // this.context.sceneController.objectStopAnimation(
+                //     {
+                //         name: Names.Hero,
+                //         animationName: "walk"
+                //     }
+                // )
             }
         }
     }

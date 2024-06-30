@@ -24,7 +24,6 @@ export class GameMapTile {
     }
 
     public isApple() {
-        debugger
         return this.item == GameMapTileItem.Apple
     }    
 }

@@ -78,6 +78,16 @@ export class MapController {
         return tile.isTeleport()
     }
 
+    public isSolid(args: {
+        position: GameVector2D
+    }) {
+        const tile = this.map.tileAt({position: args.position})
+        if (tile == null) {
+            debugger
+        }
+        return tile.isSolid
+    }
+
     public isApple(args: {
         position: GameVector2D
     }) {
