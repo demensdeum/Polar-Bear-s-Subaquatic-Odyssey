@@ -128,17 +128,56 @@ export class InGameState implements State,
         )
     }
 
+    private addHud() {
+        const hud = document.createElement('div')
+        hud.innerHTML = "Уровень 1/100<br>Яблок: 20"
+        hud.style.color = "white"
+        hud.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
+        hud.style.fontSize = "33px"
+        hud.style.padding = "8px"         
+
+        this.context.sceneController.addCssPlaneObject(
+            {
+                name: "hud",
+                div: hud,
+                planeSize: {
+                    width: 2,
+                    height: 2
+                },
+                position: new GameVector3(
+                        -3,
+                        6,
+                        -10
+                ),
+                rotation: GameVector3.zero(),
+                scale: new GameVector3(
+                    0.01,
+                    0.01,
+                    0.01
+                ),
+                shadows: {
+                    receiveShadow: false,
+                    castShadow: false
+                },
+                display: {
+                    isTop: true,
+                    stickToCamera: true
+                }
+            },
+        )              
+    }
+
     private addFireButton() {
-        const geolocationLoadingDiv = document.createElement('div')
-        geolocationLoadingDiv.innerHTML = `<img onclick='document.__global_arctica_inGameState.fireApple()' src='${Paths.assetsDirectory}/com.demensdeum.arctica.attack.button.texture.png'/>`
-        geolocationLoadingDiv.style.color = "clear"
-        geolocationLoadingDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.0)'
+        const projectileButton = document.createElement('div')
+        projectileButton.innerHTML = `<img onclick='document.__global_arctica_inGameState.fireApple()' src='${Paths.assetsDirectory}/com.demensdeum.arctica.attack.button.texture.png'/>`
+        projectileButton.style.color = "clear"
+        projectileButton.style.backgroundColor = 'rgba(128, 128, 128, 0.0)'
 
         debugger
         this.context.sceneController.addCssPlaneObject(
             {
-                name: "geolocationLoadingDiv",
-                div: geolocationLoadingDiv,
+                name: "fireButton",
+                div: projectileButton,
                 planeSize: {
                     width: 2,
                     height: 2
@@ -224,6 +263,7 @@ export class InGameState implements State,
         this.adaptMap()        
         this.addFireButton()    
         this.preCacheApple()    
+        this.addHud()
     }
 
     private preCacheApple() {
