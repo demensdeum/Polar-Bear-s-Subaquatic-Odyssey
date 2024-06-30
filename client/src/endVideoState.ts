@@ -1,15 +1,13 @@
-import { State } from "./state.js"
 import { Context } from "./context.js"
 import { GameVector3 } from "./gameVector3.js"
-import { IntroVideoState } from "./introVideoState.js"
+import { MainMenuState } from "./mainMenuState.js"
+import { State } from "./state.js"
 declare function _t(key: string): string;
 
-export class MainMenuState implements State {
-    public name: string
-    context: Context
+export class EndVideoState implements State {
 
-    private readonly switchMillisecondsTimeout = 6000
-    private startDate = new Date()    
+    public readonly name: string
+    context: Context
 
     constructor(
         name: string,
@@ -19,30 +17,62 @@ export class MainMenuState implements State {
         this.context = context
     }
 
-    initialize() {
-        this.context.sceneController.switchSkyboxIfNeeded(
+    initialize(): void {
+        const self = this
+        
+        const videoDiv = document.createElement('div')
+        videoDiv.innerHTML = '<iframe width="1280" height="1024" src="https://www.youtube.com/embed/JShD4pytr9A?autoplay=1&loop=1" frameborder="0" allowfullscreen></iframe>'
+ 
+        this.context.sceneController.addCssPlaneObject(
             {
-                name: "com.demensdeum.masonry.black",
-                environmentOnly: false
+                name: "video",
+                div: videoDiv,
+                planeSize: {
+                    width: 2,
+                    height: 2
+                },
+                position: GameVector3.zeroBut(
+                    {   
+                        x: -0.4,
+                        y: 0,
+                        z: -5
+                    }
+                ),
+                rotation: new GameVector3(
+                    0,
+                    0,
+                    0,
+                ),
+                scale: new GameVector3(
+                    0.01,
+                    0.01,
+                    0.01
+                ),
+                shadows: {
+                    receiveShadow: false,
+                    castShadow: false
+                },
+                display: {
+                    isTop: true,
+                    stickToCamera: true
+                }
             }
         )
 
-        const self = this
-
-        const playButtonDiv = document.createElement('div')
-        playButtonDiv.onclick = () => {
-            self.playButtonDidPress()
+        const menuButtonDiv = document.createElement('div')
+        menuButtonDiv.onclick = () => {
+            self.menuButtonDidPress()
         }
-        playButtonDiv.textContent = _t("PLAY_BUTTON")
-        playButtonDiv.style.color = "white"
-        playButtonDiv.style.backgroundColor = 'gray'  
-        playButtonDiv.style.fontSize = "30px"
-        playButtonDiv.style.padding = "22px"    
+        menuButtonDiv.textContent = _t("MENU_BUTTON")
+        menuButtonDiv.style.color = "white"
+        menuButtonDiv.style.backgroundColor = 'gray'  
+        menuButtonDiv.style.fontSize = "30px"
+        menuButtonDiv.style.padding = "22px"         
 
         this.context.sceneController.addCssPlaneObject(
             {
                 name: "playButton",
-                div: playButtonDiv,
+                div: menuButtonDiv,
                 planeSize: {
                     width: 2,
                     height: 2
@@ -50,7 +80,7 @@ export class MainMenuState implements State {
                 position: GameVector3.zeroBut(
                     {   
                         x: -0.4,
-                        y: 3,
+                        y: -2,
                         z: -5
                     }
                 ),
@@ -73,71 +103,21 @@ export class MainMenuState implements State {
                     stickToCamera: true
                 }
             }
-        )
-
-        const wikiButtonDiv = document.createElement('div')
-        wikiButtonDiv.onclick = () => {
-            const url = "https://github.com/demensdeum/Polar-Bear-s-Subaquatic-Odyssey"
-            window.location.assign(url)
-        }
-        wikiButtonDiv.textContent = _t("INFO_BUTTON")
-        wikiButtonDiv.style.color = "white"
-        wikiButtonDiv.style.backgroundColor = 'gray'  
-        wikiButtonDiv.style.fontSize = "30px"
-        wikiButtonDiv.style.padding = "22px"    
-
-        this.context.sceneController.addCssPlaneObject(
-            {
-                name: "wikiButton",
-                div: wikiButtonDiv,
-                planeSize: {
-                    width: 2,
-                    height: 2
-                },
-                position: GameVector3.zeroBut(
-                    {   
-                        x: -0.4,
-                        y: 2,
-                        z: -5
-                    }
-                ),
-                rotation: new GameVector3(
-                    0,
-                    0,
-                    0,
-                ),
-                scale: new GameVector3(
-                    0.01,
-                    0.01,
-                    0.01
-                ),
-                shadows: {
-                    receiveShadow: false,
-                    castShadow: false
-                },
-                display: {
-                    isTop: true,
-                    stickToCamera: true
-                }
-            }
-        )              
+        )        
     }
 
-    step() {
-        const diffMilliseconds = Math.abs((new Date().getTime() - this.startDate.getTime()))
+    step(): void {
         
-        if (diffMilliseconds > this.switchMillisecondsTimeout) {
-            this.playButtonDidPress()
-        }       
     }
 
-    public playButtonDidPress() {
-        this.context.sceneController.removeAllSceneObjectsExceptCamera()
-        const introState = new IntroVideoState(
-            "IntroVideoState",
+    private menuButtonDidPress() {
+        this.context.sceneController.removeAllSceneObjectsExceptCamera();        
+        const mainMenuState = new MainMenuState(
+            "mainMenuState",
             this.context
         )
-        this.context.transitionTo(introState)
+        this.context.transitionTo(mainMenuState)
     }
 
 }
+

@@ -10,7 +10,7 @@ import { GameVector3 } from "./gameVector3.js";
 declare function _t(key: string): string;
 
 export class LocaleSelectorState extends State implements SceneControllerDelegate {
-    private readonly switchMillisecondsTimeout = 30000
+    private readonly switchMillisecondsTimeout = 8000
     private startDate = new Date()
 
     initialize(): void {
@@ -23,14 +23,14 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
         this.context.sceneController.delegate = this
         this.context.sceneController.switchSkyboxIfNeeded(
             {
-                name: "com.demensdeum.blue.field",
+                name: "com.demensdeum.masonry.dark",
                 environmentOnly: false
             }
         )
         this.context.sceneController.addModelAt(
             {
                 name: "englishman",
-                modelName: "com.demensdeum.hero",
+                modelName: "com.demensdeum.cat.gray",
                 position: new GameVector3(0.32, -0.35, -1.23),
                 rotation: new GameVector3(0, Utils.degreesToRadians(120), 0),
                 isMovable: true,
@@ -50,7 +50,7 @@ export class LocaleSelectorState extends State implements SceneControllerDelegat
         this.context.sceneController.addModelAt(
             {
                 name: "russian",
-                modelName: "com.demensdeum.cat.gray",
+                modelName: "com.demensdeum.arctica.hero",
                 position: new GameVector3(-0.22, -0.35, -1.23),
                 rotation: new GameVector3(0, Utils.degreesToRadians(200), 0),
                 isMovable: true,

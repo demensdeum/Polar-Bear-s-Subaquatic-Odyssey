@@ -15,6 +15,7 @@ import { MapController } from "./mapController.js"
 import { MapAdapter } from "./mapAdapter.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { Paths } from "./paths.js"
+import { EndVideoState } from "./endVideoState.js"
 //import { float } from "./types.js"
 
 export class InGameState implements State,
@@ -428,7 +429,12 @@ export class InGameState implements State,
                     this.initializeLevel()
                 }
                 else {
-                    alert("Медвежонок выплыл из подводной пещеры к своей маме! Игра завершена!")
+                    const endVideoState = new EndVideoState(
+                        "EndVideoState",
+                        this.context
+                    )
+                    this.context.transitionTo(endVideoState)
+                    return true
                 }
                 return true
             }
