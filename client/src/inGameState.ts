@@ -14,12 +14,16 @@ import { GameInputMouseEventNames } from "./gameInputMouseEventNames.js"
 import { MapController } from "./mapController.js"
 import { MapAdapter } from "./mapAdapter.js"
 import { GameVector2D } from "./gameVector2D.js"
+import { Paths } from "./paths.js"
 
 export class InGameState implements State,
     InputControllerDelegate {
 
     public readonly name: string
     context: Context
+
+    private projectile?: string | null
+    private projectileRotation = GameVector3.zero()
 
     private isMoveAnimationPlaying = false
     private inputController: InputController
@@ -43,6 +47,8 @@ export class InGameState implements State,
     }
 
     initialize(): void {
+        // @ts-ignore
+        document.__global_arctica_inGameState = this
         debugPrint("InGameState initialized")
         debugPrint(this.context)
 
@@ -51,6 +57,113 @@ export class InGameState implements State,
 
         this.context.sceneController.addLight();
         this.initializeLevel()
+    }
+
+    public fireApple() {
+        if (this.projectile) {
+            return
+        }
+        this.projectile = "apple"
+        const projectile = this.projectile!
+        const startPosition = this.context.sceneController.sceneObjectPosition(Names.Hero).clone()
+        startPosition.y -= 0.5
+        this.context.sceneController.moveObject({
+            name: projectile,
+            position: startPosition
+        })
+        this.projectileRotation = this.context.sceneController.sceneObjectRotation(Names.Hero).clone()
+        this.projectileRotation.y += Utils.degreesToRadians(180)
+    }
+
+    private moveProjectile() {
+        if (!this.projectile) {
+            return
+        }
+        const projectile = this.projectile
+        debugPrint(this.projectileRotation)
+
+        const diffX = Math.sin(this.projectileRotation.y)
+        const diffY = Math.cos(this.projectileRotation.y)
+
+        const ratio = 0.06
+        const position = this.context.sceneController.sceneObjectPosition(projectile).clone()
+        position.x += diffX * ratio
+        position.z += diffY * ratio
+
+        this.context.sceneController.moveObject(
+            {
+                name: projectile,
+                position: position
+            }
+        )
+
+        const checkPositionX = Math.floor(position.x + 0.5)
+        const checkPositionY = Math.floor(position.z + 0.5)
+        
+        const checkPosition = new GameVector2D(checkPositionX, checkPositionY)
+
+        if (!this.mapController.isKnownTile({position: checkPosition}) ||
+            this.mapController.isSolid({position: checkPosition})) {
+            this.hideProjectile()            
+        }
+        else if (
+            this.mapController.isKnownTile({position: checkPosition}) &&
+            this.mapController.isShark({position: checkPosition})
+        ) {
+            this.mapController.removeShark({cursor: checkPosition})
+            this.mapAdapter.removeShark({cursor: checkPosition})
+            this.hideProjectile()
+        }
+    }
+
+    private hideProjectile() {
+        this.projectile = null
+        const position = this.context.sceneController.sceneObjectPosition("apple")
+        position.y = -2
+        this.context.sceneController.moveObject(
+            {
+                name: "apple",
+                position: position
+            }
+        )
+    }
+
+    private addFireButton() {
+        const geolocationLoadingDiv = document.createElement('div')
+        geolocationLoadingDiv.innerHTML = `<img onclick='document.__global_arctica_inGameState.fireApple()' src='${Paths.assetsDirectory}/com.demensdeum.arctica.attack.button.texture.png'/>`
+        geolocationLoadingDiv.style.color = "clear"
+        geolocationLoadingDiv.style.backgroundColor = 'rgba(128, 128, 128, 0.0)'
+
+        debugger
+        this.context.sceneController.addCssPlaneObject(
+            {
+                name: "geolocationLoadingDiv",
+                div: geolocationLoadingDiv,
+                planeSize: {
+                    width: 2,
+                    height: 2
+                },
+                position: new GameVector3(
+                        -3,
+                        -6,
+                        -10
+                ),
+                rotation: GameVector3.zero(),
+                scale: new GameVector3(
+                    0.01,
+                    0.01,
+                    0.01
+                ),
+                shadows: {
+                    receiveShadow: false,
+                    castShadow: false
+                },
+                display: {
+                    isTop: true,
+                    stickToCamera: true
+                }
+            },
+        )              
     }
 
     private initializeLevel() {
@@ -63,7 +176,6 @@ export class InGameState implements State,
                 environmentOnly: false
             }
         )
-
 
         const startHeroPosition = new GameVector3(0, 0, 0)
 
@@ -109,27 +221,31 @@ export class InGameState implements State,
             }
         )
 
-        // this.context.sceneController.addModelAt(
-        //     {
-        //         name: Names.Bottom,
-        //         modelName: "com.demensdeum.arctica.bottom",
-        //         position: new GameVector3(startHeroPosition.x, startHeroPosition.y - 2, startHeroPosition.z),
-        //         rotation: new GameVector3(0, 0, 0),
-        //         isMovable: true,
-        //         controls: new DecorControls(
-        //             Names.Hero,
-        //             new SceneObjectCommandIdle(
-        //                 "idle",
-        //                 0
-        //             ),
-        //             this.context.sceneController,
-        //             this.context.sceneController,
-        //             this.context.sceneController
-        //         )
-        //     }
-        // )
-
         this.adaptMap()        
+        this.addFireButton()    
+        this.preCacheApple()    
+    }
+
+    private preCacheApple() {
+        this.context.sceneController.addModelAt(
+            {
+                name: "apple",
+                modelName: "com.demensdeum.arctica.apple",
+                position: GameVector3.zeroBut({y: -2}),
+                rotation: GameVector3.zero(),
+                isMovable: true,
+                controls: new DecorControls(
+                    Names.Hero,
+                    new SceneObjectCommandIdle(
+                        "idle",
+                        0
+                    ),
+                    this.context.sceneController,
+                    this.context.sceneController,
+                    this.context.sceneController
+                )
+            }
+        )        
     }
 
     private moveLight() {
@@ -161,6 +277,7 @@ export class InGameState implements State,
     }
 
     step(): void {
+        this.moveProjectile()
         this.moveLight()
         this.moveCamera()
         this.inputController.step()
@@ -170,11 +287,6 @@ export class InGameState implements State,
         const heroPositionY = Math.floor(heroPosition.z)
 
         debugPrint(`${heroPosition.x}-${heroPosition.y}`)
-
-        this.context.sceneController.moveObject({
-            name: Names.Bottom,
-            position: new GameVector3(heroPosition.x, heroPosition.y - 1.5, heroPosition.z)
-        })
 
         const previousHeroX = Math.floor(this.previousHeroPosition.x)
         const previousHeroY = Math.floor(this.previousHeroPosition.y)

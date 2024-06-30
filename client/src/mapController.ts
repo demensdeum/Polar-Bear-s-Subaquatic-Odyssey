@@ -3,6 +3,7 @@ import { GameVector2D } from "./gameVector2D.js";
 import { Utils } from "./utils.js";
 import { Options } from "./options.js";
 import { int } from "./types.js";
+import { GameMapTileEntity as GameMapTileEntity } from "./gameMapTileEntity.js";
 
 export class MapController {
 
@@ -78,6 +79,20 @@ export class MapController {
         return tile.isTeleport()
     }
 
+    public isKnownTile(args: {
+        position: GameVector2D
+    }) {
+        const position = args.position
+        return this.map.tileAt({position: position}) != null
+    }
+
+    public isShark(args: {
+        position: GameVector2D
+    }) {
+        const position = args.position
+        return this.map.tileAt({position: position}).entity == GameMapTileEntity.Shark
+    }
+
     public isSolid(args: {
         position: GameVector2D
     }) {
@@ -106,6 +121,15 @@ export class MapController {
     {
         this.map.setFloor({position: args.cursor})
     }
+
+    public removeShark(args:
+        {
+            cursor:GameVector2D
+        }
+    )
+    {
+        this.map.setFloor({position: args.cursor})
+    }    
 
     private putRandomEntity(args:{
         cursor: GameVector2D

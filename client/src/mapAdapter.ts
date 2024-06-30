@@ -1,7 +1,7 @@
 import { Context } from "./context.js"
 import { DecorControls } from "./decorControls.js"
 import { GameMap } from "./gameMap.js"
-import { GameMapTileItem as GameMapTileEntity } from "./gameMapTileEntity.js"
+import { GameMapTileEntity as GameMapTileEntity } from "./gameMapTileEntity.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { GameVector3 } from "./gameVector3.js"
 import { Options } from "./options.js"
@@ -162,7 +162,6 @@ export class MapAdapter {
         const cursor = args.cursor
         const appleName = `apple-cube-${cursor.x}-${cursor.y}`
         if (this.apples.has(appleName)) {
-            debugger
             this.context.sceneController.removeSceneObjectWithName(appleName)
             this.apples.delete(appleName)
         }
@@ -173,8 +172,7 @@ export class MapAdapter {
     }) {
         const cursor = args.cursor
         const sharkName = `shark-cube-${cursor.x}-${cursor.y}`
-        if (this.apples.has(sharkName)) {
-            debugger
+        if (this.sharks.has(sharkName)) {
             this.context.sceneController.removeSceneObjectWithName(sharkName)
             this.sharks.delete(sharkName)
         }

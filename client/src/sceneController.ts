@@ -1514,13 +1514,22 @@ export class SceneController implements
         )
     }
 
+    public sceneObjectRotation(
+        name: string
+    ): any
+    {
+        const outputObject = this.sceneObject(name)
+        const outputRotation = outputObject.threeObject.rotation
+        return outputRotation
+    }
+
     public sceneObjectPosition(
         name: string
     ): any
     {
-        const outputObject = this.sceneObject(name);
-        const outputPosition = outputObject.threeObject.position.clone();
-        return outputPosition;
+        const outputObject = this.sceneObject(name)
+        const outputPosition = outputObject.threeObject.position.clone()
+        return outputPosition
     }
 
     public objectCollidesWithObject(
