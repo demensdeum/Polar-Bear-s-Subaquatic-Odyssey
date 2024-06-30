@@ -130,6 +130,17 @@ export class MapAdapter {
         }))
     }
 
+    public removeApple(args:{
+        cursor: GameVector2D
+    }) {
+        const cursor = args.cursor
+        const appleName = `apple-cube-${cursor.x}-${cursor.y}`
+        if (this.apples.has(appleName)) {
+            debugger
+            this.context.sceneController.removeSceneObjectWithName(appleName)
+        }
+    }
+
     private deleteTile(args: {
         name: string
     }) {

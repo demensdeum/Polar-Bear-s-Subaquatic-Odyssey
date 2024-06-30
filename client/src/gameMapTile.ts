@@ -18,4 +18,13 @@ export class GameMapTile {
         this.isSolid = args.isSolid
         this.item = item
     }
+
+    public isTeleport() {
+        return this.item == GameMapTileItem.Teleport
+    }
+
+    public isApple() {
+        debugger
+        return this.item == GameMapTileItem.Apple
+    }    
 }

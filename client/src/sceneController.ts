@@ -674,7 +674,7 @@ export class SceneController implements
                 const animationMixer = new THREE.AnimationMixer(model)
                 const animation = object.animations.find((e) => { return e.name == animationContainer.animationName })
                 if (animation == null) {
-                    debugPrint(`No animation with name: ${animationContainer.animationName}`)
+                    //debugPrint(`No animation with name: ${animationContainer.animationName}`)
                 }
                 else {
                     animationMixer.clipAction(animation).play()

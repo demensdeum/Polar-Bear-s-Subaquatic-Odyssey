@@ -25,7 +25,7 @@ export class InGameState implements State,
     private inputController: InputController
     private canvas: HTMLCanvasElement
 
-    private mapController: MapController
+    private mapController =  new MapController()
     private mapAdapter: MapAdapter
 
     private previousHeroPosition = new GameVector2D(0,0)
@@ -39,7 +39,6 @@ export class InGameState implements State,
         this.context = context
         this.canvas = canvas
         this.inputController = new InputController(this.canvas, this)
-        this.mapController =  new MapController()
         this.mapAdapter = new MapAdapter(context)
     }
 
@@ -55,6 +54,8 @@ export class InGameState implements State,
 
     private initializeLevel() {
         this.context.sceneController.removeAllSceneObjectsExceptCamera()
+        this.mapController =  new MapController()
+        this.mapAdapter = new MapAdapter(this.context)        
         this.context.sceneController.switchSkyboxIfNeeded(
             {
                 name: "com.demensdeum.arctic.black",
@@ -101,7 +102,7 @@ export class InGameState implements State,
             }
         )
 
-        this.mapController.putExitRandomly(
+        this.mapController.putTeleportRandomly(
             {
                 startCursor: centerCursor
             }
@@ -176,7 +177,55 @@ export class InGameState implements State,
             this.generateRegionIfNeeded()
             this.adaptMap()
             this.previousHeroPosition = new GameVector2D(heroPositionX, heroPositionY)
+            if (this.checkTeleportEnter()) {
+                return
+            }
+            this.takeAppleIfNeeded()
         }
+    }
+
+    private takeAppleIfNeeded() {
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        {
+            const x = Math.ceil(heroPosition.x)
+            const y = Math.ceil(heroPosition.z)
+            if (this.mapController.isApple({position: new GameVector2D(x, y)})) {
+                this.mapController.removeApple({cursor:new GameVector2D(x, y)})
+                this.mapAdapter.removeApple({cursor:new GameVector2D(x, y)})
+                return
+            }
+        }
+        {
+            const x = Math.floor(heroPosition.x)
+            const y = Math.floor(heroPosition.z)
+            if (this.mapController.isApple({position: new GameVector2D(x, y)})) {
+                this.mapController.removeApple({cursor:new GameVector2D(x, y)})
+                this.mapAdapter.removeApple({cursor:new GameVector2D(x, y)})
+                return
+            }
+        }        
+    }
+
+    private checkTeleportEnter() {
+        const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
+        {
+            const x = Math.ceil(heroPosition.x)
+            const y = Math.ceil(heroPosition.z)
+            if (this.mapController.isTeleport({position: new GameVector2D(x, y)})) {
+                this.initializeLevel()
+                return true
+            }
+        }
+        {
+            const x = Math.floor(heroPosition.x)
+            const y = Math.floor(heroPosition.z)
+            if (this.mapController.isTeleport({position: new GameVector2D(x, y)})) {
+                this.initializeLevel()
+                return true
+            }
+        }
+
+        return false
     }
 
     private generateRegionIfNeeded() {
@@ -216,19 +265,26 @@ export class InGameState implements State,
                     Names.Hero
                 )
 
+                const deumMode = true
                 const speedLimit = 0.02
                 const ratio = 0.2
 
-                position.x += Math.min(diffX * ratio, speedLimit)
-                position.z += Math.min(diffY * ratio, speedLimit)
+                if (deumMode) {
+                    position.x += diffX
+                    position.z += diffY
+                }
+                else {
+                    position.x += Math.min(diffX * ratio, speedLimit)
+                    position.z += Math.min(diffY * ratio, speedLimit)
+                }
 
                 if (this.isMoveAnimationPlaying == false) {
-                    this.context.sceneController.objectPlayAnimation(
-                        {
-                            name: Names.Hero,
-                            animationName: "walk"
-                        }
-                    )
+                    // this.context.sceneController.objectPlayAnimation(
+                    //     {
+                    //         name: Names.Hero,
+                    //         animationName: "walk"
+                    //     }
+                    // )
                 }
                 this.context.sceneController.moveObject(
                     {

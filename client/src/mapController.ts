@@ -68,29 +68,63 @@ export class MapController {
         }
     }
 
+    public isTeleport(args: {
+        position: GameVector2D
+    }) {
+        const tile = this.map.tileAt({position: args.position})
+        if (tile == null) {
+            debugger
+        }
+        return tile.isTeleport()
+    }
+
+    public isApple(args: {
+        position: GameVector2D
+    }) {
+        const tile = this.map.tileAt({position: args.position})
+        if (tile == null) {
+            debugger
+        }
+        return tile.isApple()
+    }    
+
+    public removeApple(args:
+        {
+            cursor:GameVector2D
+        }
+    )
+    {
+        this.map.setFloor({position: args.cursor})
+    }
+
     private putRandomItem(args:{
         cursor: GameVector2D
     }) {
         this.map.setApple({position: args.cursor.clone()})
     }
 
-    public putExitRandomly(args:{
+    public putTeleportRandomly(args:{
         startCursor: GameVector2D
     }) {
         const startCursor = args.startCursor
         var cursor = startCursor.clone()
-        const rounds = 6 + Utils.randomInt(10)
+        const teleportDebug = true
+        const rounds = teleportDebug ? 2 : 6 + Utils.randomInt(10)
         for (var i = 0; i < rounds; i++) {
             const cursorDirectionRandom = Utils.randomInt(4)
             switch (cursorDirectionRandom) {
                 case 0:
                     cursor = this.drawLineUp({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                    break
                 case 1:
                     cursor = this.drawLineLeft({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                    break
                 case 2:
                     cursor = this.drawLineRight({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                    break
                 case 3:
                     cursor = this.drawLineDown({startCursor: cursor, length: 4 + Utils.randomInt(10)})
+                    break
             }
         }
         this.map.setFloor({position: cursor})
@@ -108,7 +142,6 @@ export class MapController {
             this.map.setFloor({position: cursor})
             cursor.y -= 1
         }
-        debugger
         return cursor
     }
 
