@@ -95,7 +95,7 @@ export class InGameState implements State,
         const centerCursor = new GameVector2D(heroPositionX, heroPositionY)        
         this.mapController.generateRegion(
             {
-                cursor: centerCursor,
+                centerCursor: centerCursor,
                 onlyFloor: true,
                 overwrite: false
             }
@@ -131,7 +131,7 @@ export class InGameState implements State,
     }
 
     private moveCamera() {
-        const debugCamera = false
+        const debugCamera = true
         const cameraY = debugCamera ? 8 : 2
         const cameraZ = debugCamera ? 8 : 1
 
@@ -187,7 +187,7 @@ export class InGameState implements State,
         debugPrint(`Coordinates: ${heroPositionX} ${heroPositionY}`)      
         this.mapController.generateRegion(
             {
-                cursor: centerCursor,
+                centerCursor: centerCursor,
                 onlyFloor: false,
                 overwrite: false,
                 roomFrequency: 400

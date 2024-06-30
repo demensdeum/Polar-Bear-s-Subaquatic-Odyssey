@@ -1,7 +1,7 @@
 import { Context } from "./context.js"
 import { DecorControls } from "./decorControls.js"
 import { GameMap } from "./gameMap.js"
-import { GameMapTile } from "./gameMapTile.js"
+import { GameMapTileItem } from "./gameMapTileItem.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { GameVector3 } from "./gameVector3.js"
 import { Options } from "./options.js"
@@ -13,7 +13,9 @@ export class MapAdapter {
 
     private context: Context
     private addedTilesNames = new Set<string>()
-    private addedTiles: { [key: string]: GameMapTile } = {};
+
+    private apples = new Set<string>()
+    private teleports = new Set<string>()
 
     constructor(
         context: Context
@@ -46,7 +48,6 @@ export class MapAdapter {
                         continue
                     }
                     this.addedTilesNames.add(cubeName)
-                    this.addedTiles[cubeName] = tile
                     const cubeY = tile.isSolid ? 0 : -1
                     this.context.sceneController.addModelAt(
                         {
@@ -69,7 +70,7 @@ export class MapAdapter {
                             opacity: tile.isSolid ? 0.8 : 1.0
                         }
                     )
-                    if (tile.containsTeleport) {
+                    if (tile.item == GameMapTileItem.Teleport) {
                         const teleportName = `teleport-${cubeName}`
                         this.context.sceneController.addModelAt(
                             {
@@ -89,7 +90,35 @@ export class MapAdapter {
                                     this.context.sceneController
                                 ),
                             }
-                        )                        
+                        )     
+                        this.teleports.add(teleportName)                   
+                    }
+                    else if (tile.item == GameMapTileItem.Apple) {
+                        const appleName = `apple-${cubeName}`
+                        this.context.sceneController.addModelAt(
+                            {
+                                name: appleName,
+                                modelName: "com.demensdeum.arctica.apple",
+                                position: new GameVector3(cursorX, 0, cursorY),
+                                rotation: new GameVector3(0, Utils.degreesToRadians(Utils.randomInt(360)), 0),
+                                isMovable: true,
+                                controls: new DecorControls(
+                                    "cube",
+                                    new SceneObjectCommandIdle(
+                                        "idle",
+                                        0
+                                    ),
+                                    this.context.sceneController,
+                                    this.context.sceneController,
+                                    this.context.sceneController
+                                ),
+                            }
+                        )    
+                        this.context.sceneController.objectPlayAnimation({
+                            name: appleName,
+                            animationName: "rotation"
+                        })   
+                        this.apples.add(appleName)                                               
                     }
                 }
             }
@@ -97,18 +126,26 @@ export class MapAdapter {
 
         const unusedTiles = new Set([...oldTiles].filter(x => !newTiles.has(x)))
         unusedTiles.forEach(x => this.deleteTile({
-            name: x,
-            tile: this.addedTiles[x]
+            name: x
         }))
     }
 
     private deleteTile(args: {
-        name: string,
-        tile: GameMapTile
+        name: string
     }) {
-        args.tile.forEachChild(x => this.context.sceneController.removeSceneObjectWithName(x))
+        const name = args.name
         this.context.sceneController.removeSceneObjectWithName(args.name)
         this.addedTilesNames.delete(args.name)
+
+        const appleName = `apple-${name}`
+        if (this.apples.has(appleName)) {
+            this.context.sceneController.removeSceneObjectWithName(appleName)
+        }
+
+        const teleportName = `teleport-${name}`
+        if (this.teleports.has(teleportName)) {
+            this.context.sceneController.removeSceneObjectWithName(teleportName)
+        }
     }
 
 }

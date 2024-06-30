@@ -1,4 +1,5 @@
 import { GameMapTile } from "./gameMapTile.js";
+import { GameMapTileItem } from "./gameMapTileItem.js";
 import { GameVector2D } from "./gameVector2D.js";
 
 export class GameMap {
@@ -14,7 +15,7 @@ export class GameMap {
         this.tiles[key] = new GameMapTile(
             {
                 isSolid: false,
-                containsTeleport: true
+                item: GameMapTileItem.Teleport
             }
         )
     }
@@ -26,6 +27,22 @@ export class GameMap {
         const position = args.position 
         const key = `${position.x}-${position.y}`
         return this.tiles[key]
+    }
+
+    public setApple(args:{
+        position: GameVector2D
+    })
+    {
+        const tile = new GameMapTile(
+            {
+                isSolid: false,
+                item: GameMapTileItem.Apple
+            }
+        )
+
+        const position = args.position
+        const key = `${position.x}-${position.y}`
+        this.tiles[key] = tile     
     }
 
     public setFloor(args: {
