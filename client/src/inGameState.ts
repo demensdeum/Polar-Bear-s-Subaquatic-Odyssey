@@ -412,23 +412,15 @@ export class InGameState implements State,
 
     private checkTeleportEnter() {
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
-        {
-            const x = Math.ceil(heroPosition.x)
-            const y = Math.ceil(heroPosition.z)
-            if (this.mapController.isTeleport({position: new GameVector2D(x, y)})) {
-                this.initializeLevel()
-                return true
-            }
-        }
-        {
-            const x = Math.floor(heroPosition.x)
-            const y = Math.floor(heroPosition.z)
+            const x = Math.floor(heroPosition.x + 0.5)
+            const y = Math.floor(heroPosition.z + 0.5)
             if (this.mapController.isTeleport({position: new GameVector2D(x, y)})) {
                 if (this.levelCount < this.lastLevel) {
                     this.levelCount += 1
                     this.initializeLevel()
                 }
                 else {
+                    this.context.sceneController.removeAllSceneObjectsExceptCamera()
                     const endVideoState = new EndVideoState(
                         "EndVideoState",
                         this.context
@@ -438,8 +430,6 @@ export class InGameState implements State,
                 }
                 return true
             }
-        }
-
         return false
     }
 

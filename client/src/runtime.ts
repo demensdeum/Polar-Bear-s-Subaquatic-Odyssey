@@ -1,5 +1,5 @@
-export function debugPrint(text: any) {
-    console.log(text);
+export function debugPrint(_: any) {
+    //console.log(text);
 };
 
 export function raiseCriticalError(text: any) {
