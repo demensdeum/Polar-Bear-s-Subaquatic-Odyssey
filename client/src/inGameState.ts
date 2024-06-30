@@ -49,6 +49,7 @@ export class InGameState implements State,
         debugPrint(this.canvas)
         debugPrint(this.inputController)
 
+        this.context.sceneController.addLight();
         this.initializeLevel()
     }
 
@@ -131,8 +132,16 @@ export class InGameState implements State,
         this.adaptMap()        
     }
 
+    private moveLight() {
+        let lightPosition = this.context.sceneController.sceneObjectPosition(
+            Names.Hero
+        ).clone()
+        lightPosition.y += 1.45
+        this.context.sceneController.moveLight({position: lightPosition})
+    }
+
     private moveCamera() {
-        const debugCamera = true
+        const debugCamera = false
         const cameraY = debugCamera ? 8 : 2
         const cameraZ = debugCamera ? 8 : 1
 
@@ -152,6 +161,7 @@ export class InGameState implements State,
     }
 
     step(): void {
+        this.moveLight()
         this.moveCamera()
         this.inputController.step()
 
@@ -187,23 +197,14 @@ export class InGameState implements State,
     private takeAppleIfNeeded() {
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
         {
-            const x = Math.ceil(heroPosition.x)
-            const y = Math.ceil(heroPosition.z)
+            const x = Math.floor(heroPosition.x + 0.5) 
+            const y = Math.floor(heroPosition.z + 0.5) 
             if (this.mapController.isApple({position: new GameVector2D(x, y)})) {
                 this.mapController.removeApple({cursor:new GameVector2D(x, y)})
                 this.mapAdapter.removeApple({cursor:new GameVector2D(x, y)})
                 return
             }
         }
-        {
-            const x = Math.floor(heroPosition.x)
-            const y = Math.floor(heroPosition.z)
-            if (this.mapController.isApple({position: new GameVector2D(x, y)})) {
-                this.mapController.removeApple({cursor:new GameVector2D(x, y)})
-                this.mapAdapter.removeApple({cursor:new GameVector2D(x, y)})
-                return
-            }
-        }        
     }
 
     private checkTeleportEnter() {

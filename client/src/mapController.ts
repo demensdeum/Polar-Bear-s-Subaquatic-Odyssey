@@ -118,7 +118,7 @@ export class MapController {
     }) {
         const startCursor = args.startCursor
         var cursor = startCursor.clone()
-        const teleportDebug = true
+        const teleportDebug = false
         const rounds = teleportDebug ? 2 : 6 + Utils.randomInt(10)
         for (var i = 0; i < rounds; i++) {
             const cursorDirectionRandom = Utils.randomInt(4)

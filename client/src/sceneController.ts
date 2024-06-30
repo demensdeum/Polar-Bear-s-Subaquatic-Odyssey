@@ -61,6 +61,7 @@ export class SceneController implements
 
     private stepCounter: int = 0
     
+    private light: any
     private scene: THREE.Scene
     private camera: THREE.PerspectiveCamera
     private css3DRendererBottom: CSS3DRenderer
@@ -537,12 +538,23 @@ export class SceneController implements
             debugPrint("Can't add light, because shadows are disabled")
             return
         }
-        const light = new THREE.DirectionalLight(0xffffff, 7);
-        light.position.set( 1, 2, 1);
+        this.light = new THREE.PointLight(0xffffff, 4, 10);
+        this.light.position.set(0, 3, 0);
+        this.light.shadow.bias = -0.02
         if (this.shadowsEnabled) {
-            light.castShadow = true
+            this.light.castShadow = true
         }
-        this.scene.add( light )
+        this.scene.add(this.light)
+    }
+
+    public moveLight(args: {
+        position: GameVector3
+    })
+    {
+        const position = args.position
+        this.light.position.x = position.x
+        this.light.position.y = position.y
+        this.light.position.z = position.z
     }
 
     public addValueFloat(

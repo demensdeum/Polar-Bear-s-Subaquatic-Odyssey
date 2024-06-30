@@ -66,8 +66,8 @@ export class MapAdapter {
                                 this.context.sceneController,
                                 this.context.sceneController
                             ),
-                            transparent: tile.isSolid,
-                            opacity: tile.isSolid ? 0.8 : 1.0
+                            // transparent: tile.isSolid,
+                            // opacity: tile.isSolid ? 0.8 : 1.0
                         }
                     )
                     if (tile.item == GameMapTileItem.Teleport) {
