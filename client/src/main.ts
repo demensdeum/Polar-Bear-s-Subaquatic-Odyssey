@@ -1,7 +1,8 @@
 // import { CompanyLogoState } from "./companyLogoState.js"
 import { Context } from "./context.js"
-import { InGameState } from "./inGameState.js"
+//import { InGameState } from "./inGameState.js"
 import { raiseCriticalError } from "./runtime.js"
+import { CompanyLogoState } from "./companyLogoState.js"
 
 function main(options: {[key: string]: string} = {}) {
   const debugEnabled = options["debugEnabled"] === "true"
@@ -13,13 +14,19 @@ function main(options: {[key: string]: string} = {}) {
   const canvas = context.canvas
 
   if (canvas) {
-    const startState = new InGameState(
-      "InGameState",
-      canvas,
+    // const startState = new InGameState(
+    //   "InGameState",
+    //   canvas,
+    //   context
+    // )
+    // context.start(startState);
+  
+    const startState = new CompanyLogoState(
+      "CompanyLogo",
       context
     )
     context.start(startState);
-  
+
     let lastFrameTime = 0
     const fpsInterval = 1000 / 60
 

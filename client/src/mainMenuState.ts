@@ -78,10 +78,10 @@ export class MainMenuState implements State {
 
         const wikiButtonDiv = document.createElement('div')
         wikiButtonDiv.onclick = () => {
-            const url = "https://demensdeum.com/masonry-ar-wiki-ru/"
+            const url = "https://github.com/demensdeum/Polar-Bear-s-Subaquatic-Odyssey"
             window.location.assign(url)
         }
-        wikiButtonDiv.textContent = _t("WIKI_BUTTON")
+        wikiButtonDiv.textContent = _t("INFO_BUTTON")
         wikiButtonDiv.style.color = "white"
         wikiButtonDiv.style.backgroundColor = 'gray'  
         wikiButtonDiv.style.fontSize = "30px"
