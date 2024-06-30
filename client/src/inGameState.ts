@@ -109,25 +109,25 @@ export class InGameState implements State,
             }
         )
 
-        this.context.sceneController.addModelAt(
-            {
-                name: Names.Bottom,
-                modelName: "com.demensdeum.arctica.bottom",
-                position: new GameVector3(startHeroPosition.x, startHeroPosition.y - 2, startHeroPosition.z),
-                rotation: new GameVector3(0, 0, 0),
-                isMovable: true,
-                controls: new DecorControls(
-                    Names.Hero,
-                    new SceneObjectCommandIdle(
-                        "idle",
-                        0
-                    ),
-                    this.context.sceneController,
-                    this.context.sceneController,
-                    this.context.sceneController
-                )
-            }
-        )
+        // this.context.sceneController.addModelAt(
+        //     {
+        //         name: Names.Bottom,
+        //         modelName: "com.demensdeum.arctica.bottom",
+        //         position: new GameVector3(startHeroPosition.x, startHeroPosition.y - 2, startHeroPosition.z),
+        //         rotation: new GameVector3(0, 0, 0),
+        //         isMovable: true,
+        //         controls: new DecorControls(
+        //             Names.Hero,
+        //             new SceneObjectCommandIdle(
+        //                 "idle",
+        //                 0
+        //             ),
+        //             this.context.sceneController,
+        //             this.context.sceneController,
+        //             this.context.sceneController
+        //         )
+        //     }
+        // )
 
         this.adaptMap()        
     }

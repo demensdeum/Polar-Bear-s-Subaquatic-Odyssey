@@ -1,8 +1,8 @@
-import { GameMapTileItem } from "./gameMapTileItem.js"
+import { GameMapTileItem } from "./gameMapTileEntity.js"
 
 export class GameMapTile {
     public readonly isSolid: boolean
-    public readonly item: GameMapTileItem
+    public readonly entity: GameMapTileItem
 
     constructor(
         args: {
@@ -16,14 +16,18 @@ export class GameMapTile {
         } = args
 
         this.isSolid = args.isSolid
-        this.item = item
+        this.entity = item
     }
 
     public isTeleport() {
-        return this.item == GameMapTileItem.Teleport
+        return this.entity == GameMapTileItem.Teleport
     }
 
     public isApple() {
-        return this.item == GameMapTileItem.Apple
+        return this.entity == GameMapTileItem.Apple
     }    
+
+    public isShark() {
+        return this.entity == GameMapTileItem.Shark
+    }
 }

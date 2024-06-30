@@ -1,7 +1,7 @@
 import { Context } from "./context.js"
 import { DecorControls } from "./decorControls.js"
 import { GameMap } from "./gameMap.js"
-import { GameMapTileItem } from "./gameMapTileItem.js"
+import { GameMapTileItem as GameMapTileEntity } from "./gameMapTileEntity.js"
 import { GameVector2D } from "./gameVector2D.js"
 import { GameVector3 } from "./gameVector3.js"
 import { Options } from "./options.js"
@@ -16,6 +16,7 @@ export class MapAdapter {
 
     private apples = new Set<string>()
     private teleports = new Set<string>()
+    private sharks = new Set<string>()
 
     constructor(
         context: Context
@@ -66,11 +67,9 @@ export class MapAdapter {
                                 this.context.sceneController,
                                 this.context.sceneController
                             ),
-                            // transparent: tile.isSolid,
-                            // opacity: tile.isSolid ? 0.8 : 1.0
                         }
                     )
-                    if (tile.item == GameMapTileItem.Teleport) {
+                    if (tile.entity == GameMapTileEntity.Teleport) {
                         const teleportName = `teleport-${cubeName}`
                         this.context.sceneController.addModelAt(
                             {
@@ -93,7 +92,7 @@ export class MapAdapter {
                         )     
                         this.teleports.add(teleportName)                   
                     }
-                    else if (tile.item == GameMapTileItem.Apple) {
+                    else if (tile.entity == GameMapTileEntity.Apple) {
                         const appleName = `apple-${cubeName}`
                         this.context.sceneController.addModelAt(
                             {
@@ -120,6 +119,33 @@ export class MapAdapter {
                         })   
                         this.apples.add(appleName)                                               
                     }
+                    else if (tile.entity == GameMapTileEntity.Shark) {
+                        const sharkName = `shark-${cubeName}`
+                        this.context.sceneController.addModelAt(
+                            {
+                                name: sharkName,
+                                modelName: "com.demensdeum.arctica.enemy",
+                                position: new GameVector3(cursorX, 0, cursorY),
+                                rotation: new GameVector3(0, Utils.degreesToRadians(Utils.randomInt(360)), 0),
+                                isMovable: true,
+                                controls: new DecorControls(
+                                    "cube",
+                                    new SceneObjectCommandIdle(
+                                        "idle",
+                                        0
+                                    ),
+                                    this.context.sceneController,
+                                    this.context.sceneController,
+                                    this.context.sceneController
+                                ),
+                            }
+                        )    
+                        this.context.sceneController.objectPlayAnimation({
+                            name: sharkName,
+                            animationName: "swim"
+                        })   
+                        this.sharks.add(sharkName)                                               
+                    }
                 }
             }
         }
@@ -138,8 +164,21 @@ export class MapAdapter {
         if (this.apples.has(appleName)) {
             debugger
             this.context.sceneController.removeSceneObjectWithName(appleName)
+            this.apples.delete(appleName)
         }
     }
+
+    public removeShark(args:{
+        cursor: GameVector2D
+    }) {
+        const cursor = args.cursor
+        const sharkName = `shark-cube-${cursor.x}-${cursor.y}`
+        if (this.apples.has(sharkName)) {
+            debugger
+            this.context.sceneController.removeSceneObjectWithName(sharkName)
+            this.sharks.delete(sharkName)
+        }
+    }    
 
     private deleteTile(args: {
         name: string
@@ -151,11 +190,19 @@ export class MapAdapter {
         const appleName = `apple-${name}`
         if (this.apples.has(appleName)) {
             this.context.sceneController.removeSceneObjectWithName(appleName)
+            this.apples.delete(appleName)
         }
 
         const teleportName = `teleport-${name}`
         if (this.teleports.has(teleportName)) {
             this.context.sceneController.removeSceneObjectWithName(teleportName)
+            this.teleports.delete(teleportName)
+        }
+
+        const sharkName = `shark-${name}`
+        if (this.sharks.has(sharkName)) {
+            this.context.sceneController.removeSceneObjectWithName(sharkName)
+            this.sharks.delete(sharkName)
         }
     }
 

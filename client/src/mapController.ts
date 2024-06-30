@@ -57,7 +57,7 @@ export class MapController {
                             })
                             if (Utils.randomInt(10) == 0) {
                                 const itemCursor = new GameVector2D(cursorX, cursorY)
-                                this.putRandomItem(
+                                this.putRandomEntity(
                                     {cursor: itemCursor}
                                 )
                             }
@@ -107,10 +107,15 @@ export class MapController {
         this.map.setFloor({position: args.cursor})
     }
 
-    private putRandomItem(args:{
+    private putRandomEntity(args:{
         cursor: GameVector2D
     }) {
-        this.map.setApple({position: args.cursor.clone()})
+        if (Utils.randomBool()) {
+            this.map.setApple({position: args.cursor.clone()})
+        }
+        else {
+            this.map.setShark({position: args.cursor.clone()})
+        }
     }
 
     public putTeleportRandomly(args:{

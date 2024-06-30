@@ -1,5 +1,5 @@
 import { GameMapTile } from "./gameMapTile.js";
-import { GameMapTileItem } from "./gameMapTileItem.js";
+import { GameMapTileItem } from "./gameMapTileEntity.js";
 import { GameVector2D } from "./gameVector2D.js";
 
 export class GameMap {
@@ -27,6 +27,22 @@ export class GameMap {
         const position = args.position 
         const key = `${position.x}-${position.y}`
         return this.tiles[key]
+    }
+
+    public setShark(args:{
+        position: GameVector2D
+    })
+    {
+        const tile = new GameMapTile(
+            {
+                isSolid: false,
+                item: GameMapTileItem.Shark
+            }
+        )
+
+        const position = args.position
+        const key = `${position.x}-${position.y}`
+        this.tiles[key] = tile     
     }
 
     public setApple(args:{
