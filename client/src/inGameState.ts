@@ -22,6 +22,8 @@ export class InGameState implements State,
     public readonly name: string
     context: Context
 
+    private hud?: HTMLElement
+
     private projectile?: string | null
     private projectileRotation = GameVector3.zero()
 
@@ -33,6 +35,9 @@ export class InGameState implements State,
     private mapAdapter: MapAdapter
 
     private previousHeroPosition = new GameVector2D(0,0)
+    private levelCount = 1
+    private readonly lastLevel = 100
+    private applesCount = 20
 
     constructor(
         name: string,
@@ -63,6 +68,9 @@ export class InGameState implements State,
         if (this.projectile) {
             return
         }
+        if (this.applesCount < 1) {
+            return
+        }
         this.projectile = "apple"
         const projectile = this.projectile!
         const startPosition = this.context.sceneController.sceneObjectPosition(Names.Hero).clone()
@@ -73,6 +81,7 @@ export class InGameState implements State,
         })
         this.projectileRotation = this.context.sceneController.sceneObjectRotation(Names.Hero).clone()
         this.projectileRotation.y += Utils.degreesToRadians(180)
+        this.applesCount -= 1
     }
 
     private moveProjectile() {
@@ -129,8 +138,9 @@ export class InGameState implements State,
     }
 
     private addHud() {
-        const hud = document.createElement('div')
-        hud.innerHTML = "Уровень 1/100<br>Яблок: 20"
+        this.hud = document.createElement('div')
+        const hud = this.hud!
+        hud.innerHTML = `test`
         hud.style.color = "white"
         hud.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'  
         hud.style.fontSize = "33px"
@@ -165,6 +175,13 @@ export class InGameState implements State,
                 }
             },
         )              
+    }
+
+    private updateHud() {
+        if (!this.hud) {
+            return
+        }
+        this.hud.innerHTML = `Уровень ${this.levelCount}/${this.lastLevel}<br>Яблок: ${this.applesCount}`        
     }
 
     private addFireButton() {
@@ -320,6 +337,7 @@ export class InGameState implements State,
         this.moveProjectile()
         this.moveLight()
         this.moveCamera()
+        this.updateHud()
         this.inputController.step()
 
         const heroPosition = this.context.sceneController.sceneObjectPosition(Names.Hero)
@@ -352,6 +370,7 @@ export class InGameState implements State,
             const x = Math.floor(heroPosition.x + 0.5) 
             const y = Math.floor(heroPosition.z + 0.5) 
             if (this.mapController.isApple({position: new GameVector2D(x, y)})) {
+                this.applesCount += 1
                 this.mapController.removeApple({cursor:new GameVector2D(x, y)})
                 this.mapAdapter.removeApple({cursor:new GameVector2D(x, y)})
                 return
@@ -373,7 +392,13 @@ export class InGameState implements State,
             const x = Math.floor(heroPosition.x)
             const y = Math.floor(heroPosition.z)
             if (this.mapController.isTeleport({position: new GameVector2D(x, y)})) {
-                this.initializeLevel()
+                if (this.levelCount < this.lastLevel) {
+                    this.levelCount += 1
+                    this.initializeLevel()
+                }
+                else {
+                    alert("Медвежонок выплыл из подводной пещеры к своей маме! Игра завершена!")
+                }
                 return true
             }
         }

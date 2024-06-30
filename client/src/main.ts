@@ -1,4 +1,4 @@
-//import { CompanyLogoState } from "./companyLogoState.js"
+// import { CompanyLogoState } from "./companyLogoState.js"
 import { Context } from "./context.js"
 import { InGameState } from "./inGameState.js"
 import { raiseCriticalError } from "./runtime.js"
@@ -20,11 +20,20 @@ function main(options: {[key: string]: string} = {}) {
     )
     context.start(startState);
   
-    function step() {
+    let lastFrameTime = 0
+    const fpsInterval = 1000 / 60
+
+    function step(timestamp: number) {
         if (!context.isRunning) {
             return
         }
-        context.step()
+        const elapsed = timestamp - lastFrameTime
+
+        if (elapsed > fpsInterval) {
+            lastFrameTime = timestamp - (elapsed % fpsInterval)
+            context.step()
+        }
+
         requestAnimationFrame(step)
     }
   
